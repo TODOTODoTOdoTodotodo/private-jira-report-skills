@@ -25,6 +25,8 @@ fi
 OUTPUT_DIR="${OUTPUT_DIR:-$PWD}"
 EVALUATION_REPORT="${EVALUATION_REPORT:-0}"
 YEAR="${YEAR:-}"
+ROLE_MODE="${ROLE_MODE:-dev}"
+DEVSTATUS_CACHE="${DEVSTATUS_CACHE:-$OUTPUT_DIR/devstatus-cache.json}"
 BASE_JSON="${OUTPUT_DIR}/jira-source.json"
 SUPP_JSON="${OUTPUT_DIR}/jira-source-supplement.json"
 MERGED_JSON="${OUTPUT_DIR}/jira-source-merged.json"
@@ -49,14 +51,18 @@ args=(
   "$MERGED_JSON"
   --batch-file "$ROOTS_TXT"
   --csv-output "$CSV_OUT"
-  --include-master-merge
   --env-file "${ENV_FILE:-$HOME/.codex/jira_env}"
+  --role-mode "$ROLE_MODE"
 )
 
-if [[ -n "$MERGE_START" ]]; then
+if [[ "$ROLE_MODE" == "dev" ]]; then
+  args+=(--include-master-merge --devstatus-cache "$DEVSTATUS_CACHE")
+fi
+
+if [[ "$ROLE_MODE" == "dev" && -n "$MERGE_START" ]]; then
   args+=(--merge-start "$MERGE_START")
 fi
-if [[ -n "$MERGE_END" ]]; then
+if [[ "$ROLE_MODE" == "dev" && -n "$MERGE_END" ]]; then
   args+=(--merge-end "$MERGE_END")
 fi
 

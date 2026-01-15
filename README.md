@@ -83,6 +83,8 @@ ENV_FILE=~/.codex/jira_env \
 - `PARALLEL_RANGES`: 주차 병렬 개수
 - `QUARTER_PARALLEL`: 분기 병렬 개수
 - `QUARTERS`: 실행할 분기 (예: `Q1`, `Q1,Q2`)
+- `ROLE_MODE`: `dev`(기본, PR merge 기준) / `plan_qa`(assignee 기준)
+- `DEVSTATUS_CACHE`: dev-status 캐시 경로 (기본: `OUTPUT_DIR/devstatus-cache.json`)
 
 ## 출력 위치
 - 기본: `~/Downloads/itpt-YYYY`

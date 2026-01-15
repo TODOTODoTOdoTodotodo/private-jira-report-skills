@@ -25,6 +25,8 @@ jira 연결해줘. 인증 token, 2026년 1월, ENV_FILE=~/.codex/jira_env, 프�
 - Credentials env file: `ENV_FILE` (e.g. `~/.codex/jira_env`)
 - MCP server: `atlassian-local` (local MCP server, required for supplements)
 - Atlassian env vars: `ATLASSIAN_DOMAIN`, `ATLASSIAN_EMAIL`, `ATLASSIAN_API_TOKEN` (can be mapped from `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`)
+- Role mode: `ROLE_MODE=dev|plan_qa` (dev=PR merge 기준, plan_qa=assignee 기준)
+- Dev-status cache: `DEVSTATUS_CACHE` (기본 `OUTPUT_DIR/devstatus-cache.json`)
 
 ### Run end-to-end export (partial)
 This generates the source JSON, roots list, missing keys, and a partial CSV.

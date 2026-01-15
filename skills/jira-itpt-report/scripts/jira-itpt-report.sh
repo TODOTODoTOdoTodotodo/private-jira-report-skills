@@ -212,15 +212,26 @@ python3 "$ROOTS_SCRIPT" "$SOURCE_JSON" "$ROOTS_TXT" --prefix MGTT-
 
 MERGE_START="${MERGE_START:-$RANGE_START}"
 MERGE_END="${MERGE_END:-$RANGE_END}"
+ROLE_MODE="${ROLE_MODE:-}"
+if [[ -z "$ROLE_MODE" ]]; then
+  ROLE_MODE="dev"
+fi
+DEVSTATUS_CACHE="${DEVSTATUS_CACHE:-$OUTPUT_DIR/devstatus-cache.json}"
 
-python3 "$TRAVERSE_SCRIPT" "$SOURCE_JSON" \
-  --batch-file "$ROOTS_TXT" \
-  --max-depth "$MAX_DEPTH" \
-  --csv-output "$CSV_OUT" \
-  --include-master-merge \
-  --env-file "$ENV_FILE" \
-  --merge-start "$MERGE_START" \
-  --merge-end "$MERGE_END"
+TRAVERSE_ARGS=(
+  "$SOURCE_JSON"
+  --batch-file "$ROOTS_TXT"
+  --max-depth "$MAX_DEPTH"
+  --csv-output "$CSV_OUT"
+  --env-file "$ENV_FILE"
+  --role-mode "$ROLE_MODE"
+)
+
+if [[ "$ROLE_MODE" == "dev" ]]; then
+  TRAVERSE_ARGS+=(--include-master-merge --merge-start "$MERGE_START" --merge-end "$MERGE_END" --devstatus-cache "$DEVSTATUS_CACHE")
+fi
+
+python3 "$TRAVERSE_SCRIPT" "${TRAVERSE_ARGS[@]}"
 
 if [[ -s "$MISSING_TXT" ]]; then
   echo "Missing keys detected. Use MCP to fetch and merge before final report:" >&2

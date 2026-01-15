@@ -22,6 +22,28 @@ def load_data(path):
     return index
 
 
+def load_cache(path):
+    if not path:
+        return {}
+    if not os.path.exists(path):
+        return {}
+    with open(path, "r", encoding="utf-8") as handle:
+        try:
+            data = json.load(handle)
+        except json.JSONDecodeError:
+            return {}
+    return data if isinstance(data, dict) else {}
+
+
+def save_cache(path, cache):
+    if not path:
+        return
+    tmp_path = path + ".tmp"
+    with open(tmp_path, "w", encoding="utf-8") as handle:
+        json.dump(cache, handle, ensure_ascii=False, indent=2)
+    os.replace(tmp_path, path)
+
+
 def load_env_file(path):
     if not path:
         return
@@ -214,9 +236,13 @@ def find_master_merge_date(pull_requests):
     return latest.isoformat()
 
 
-def get_master_merge_date(issue_key, base_url, headers, timeout, id_cache):
+def get_master_merge_date(issue_key, base_url, headers, timeout, id_cache, cache):
+    if cache is not None and issue_key in cache:
+        return cache.get(issue_key, "")
     issue_id = get_issue_id(issue_key, base_url, headers, timeout, id_cache)
     if not issue_id:
+        if cache is not None:
+            cache[issue_key] = ""
         return ""
     params = urllib.parse.urlencode(
         {
@@ -231,7 +257,10 @@ def get_master_merge_date(issue_key, base_url, headers, timeout, id_cache):
     for detail in data.get("detail", []) or []:
         prs = detail.get("pullRequests") or detail.get("pullrequests") or []
         pull_requests.extend(prs)
-    return find_master_merge_date(pull_requests)
+    merged_at = find_master_merge_date(pull_requests)
+    if cache is not None:
+        cache[issue_key] = merged_at or ""
+    return merged_at
 
 
 def unique_roots(path):
@@ -277,8 +306,10 @@ def main():
     parser.add_argument("--csv-output", required=True)
     parser.add_argument("--env-file", default="")
     parser.add_argument("--include-master-merge", action="store_true")
+    parser.add_argument("--role-mode", choices=["dev", "plan_qa"], default="")
     parser.add_argument("--merge-start", default="")
     parser.add_argument("--merge-end", default="")
+    parser.add_argument("--devstatus-cache", default="")
     parser.add_argument("--http-timeout", type=int, default=60)
     args = parser.parse_args()
 
@@ -286,10 +317,17 @@ def main():
     roots = unique_roots(args.batch_file)
 
     rows = []
+    role_mode = args.role_mode or os.environ.get("ROLE_MODE", "")
     include_master_merge = args.include_master_merge
+    if role_mode == "dev":
+        include_master_merge = True
+    elif role_mode == "plan_qa":
+        include_master_merge = False
     headers = {}
     base_url = ""
     id_cache = {}
+    cache_path = args.devstatus_cache or os.environ.get("DEVSTATUS_CACHE", "")
+    dev_cache = load_cache(cache_path) if include_master_merge else {}
     merge_start = parse_range(args.merge_start)
     merge_end = parse_range(args.merge_end)
     if include_master_merge:
@@ -313,9 +351,19 @@ def main():
     for root_key in roots:
         row = find_first_itpt(index, root_key, args.max_depth)
         if include_master_merge:
-            row["master_merged_at"] = get_master_merge_date(
-                root_key, base_url, headers, args.http_timeout, id_cache
-            )
+            try:
+                row["master_merged_at"] = get_master_merge_date(
+                    root_key,
+                    base_url,
+                    headers,
+                    args.http_timeout,
+                    id_cache,
+                    dev_cache,
+                )
+            except Exception:
+                if dev_cache is not None:
+                    dev_cache[root_key] = ""
+                row["master_merged_at"] = ""
             if not in_merge_range(row.get("master_merged_at"), merge_start, merge_end):
                 continue
         rows.append(row)
@@ -352,6 +400,9 @@ def main():
             if include_master_merge:
                 data.append(row.get("master_merged_at", ""))
             writer.writerow(data)
+
+    if include_master_merge:
+        save_cache(cache_path, dev_cache)
 
 
 if __name__ == "__main__":

@@ -17,6 +17,8 @@ Runs 4 quarter jobs in parallel using the existing `private-jira-report` workflo
 - `QUARTER_PARALLEL` (optional, default `4`)
 - `PARALLEL_RANGES` (optional, default `4`) for weekly export parallelism
 - `QUARTERS` (optional, default all) e.g. `Q1` or `Q1,Q2`
+- `ROLE_MODE` (optional, default `dev`) `dev`=PR merge 기준, `plan_qa`=assignee 기준
+- `DEVSTATUS_CACHE` (optional, default `OUTPUT_DIR/devstatus-cache.json`)
 - `CONCURRENCY`, `MAX_RESULTS`, `MAX_PAGES`, `HTTP_TIMEOUT` (optional, passthrough)
 - `COMMENT_AUTHOR_DISPLAY` (optional, passthrough)
 
