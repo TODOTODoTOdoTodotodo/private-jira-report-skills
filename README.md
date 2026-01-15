@@ -73,6 +73,7 @@ ENV_FILE=~/.codex/jira_env \
 2) 분기 내부는 주 단위 export 병렬 처리 유지
 3) master 브랜치 PR merge 기간으로 필터링
 4) 분기 CSV를 연간 CSV로 병합(중복 root_key 제거)
+5) comment match는 기본 OFF, 필요 시 `COMMENT_MATCH=1`로 활성화
 
 ### 파라미터 설명 (핵심)
 - `YEAR`: 연간 기준 연도
