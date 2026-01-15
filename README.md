@@ -104,6 +104,17 @@ git clone https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
 rsync -a private-jira-report-skills/skills/ ~/.codex/skills/
 ```
 
+## 사전 준비 (jira_env)
+템플릿: `~/.codex/jira_env_template`
+
+예시:
+```
+JIRA_BASE_URL=https://your-domain.atlassian.net
+JIRA_EMAIL=your-email@example.com
+JIRA_API_TOKEN=ATATT...
+JIRA_ACCOUNT_ID=your-account-id
+```
+
 ## 암묵적 호출 방법
 - 예시: "2025년 개인 리포트 만들어줘"
 - 예시: "작년 리포트 만들어줘. 프로젝트 MGTT,ITPT"
