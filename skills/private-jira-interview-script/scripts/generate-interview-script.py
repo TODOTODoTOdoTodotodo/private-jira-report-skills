@@ -64,6 +64,12 @@ def main():
     reverse=True,
   )[:5]
 
+  all_items = sorted(
+    roots.values(),
+    key=lambda r: (r.get("master_merged_at") or "", r.get("root_key") or ""),
+    reverse=True,
+  )
+
   with open(out_path, "w", encoding="utf-8") as f:
     f.write(f"# {args.year} 개인 업무 기여 요약 (면접 답변 스크립트)\n\n")
     f.write("## Q1. 2025년에 당신이 회사에 기여한게 뭐가있는지 말해봐라.\n")
@@ -83,6 +89,17 @@ def main():
         f.write(f"- {key}: {summary} (master merge: {merged})\n")
     else:
       f.write("- (대표 성과 예시를 찾지 못했습니다)\n")
+    f.write("\n")
+
+    f.write("## 전체 이슈 목록\n")
+    if all_items:
+      for item in all_items:
+        key = item.get("root_key")
+        summary = item.get("root_summary") or "(제목 없음)"
+        merged = item.get("master_merged_at") or "-"
+        f.write(f"- {key}: {summary} (master merge: {merged})\n")
+    else:
+      f.write("- (이슈 목록이 없습니다)\n")
     f.write("\n")
 
     f.write("## Q2. 당신의 장점은 무엇인가?\n")
