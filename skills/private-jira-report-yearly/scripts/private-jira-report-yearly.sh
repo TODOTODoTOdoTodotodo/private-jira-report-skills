@@ -141,3 +141,12 @@ with open(out, "w", encoding="utf-8-sig", newline="") as f:
 PY
 
 echo "Annual report generated: $MERGED_CSV"
+
+INTERVIEW_SCRIPT="${INTERVIEW_SCRIPT:-1}"
+if [[ "$INTERVIEW_SCRIPT" == "1" ]]; then
+  INTERVIEW_SCRIPT_TOOL="${HOME}/.codex/skills/private-jira-interview-script/scripts/generate-interview-script.py"
+  python3 "$INTERVIEW_SCRIPT_TOOL" \
+    --year "$YEAR" \
+    --csv "$MERGED_CSV" \
+    --out "${OUTPUT_DIR}/interview-script-${YEAR}.md"
+fi
