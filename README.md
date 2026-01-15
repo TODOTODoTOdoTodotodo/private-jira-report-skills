@@ -1,11 +1,11 @@
-# Private Jira Report 스킬 가이드 (v1)
+# Private Jira Report Yearly 스킬 가이드 (v1)
 
 ## 목적
-개인이 최소 입력(YEAR, MONTH, PROJECTS)만으로 MGTT/ITPT 월간 리포트를 생성할 수 있도록 표준 실행 흐름을 제공합니다.
+연간 개인 리포트를 분기 단위 병렬 처리(Q1~Q4)로 생성하고, 각 분기 내부는 주차 병렬 export를 유지하면서 최종 연간 CSV로 취합하는 표준 실행 흐름을 제공합니다.
 
 ## 대상
-- Jira 월간 리포트를 반복 생성해야 하는 개인
-- Jira/MCP 환경을 처음 세팅하는 개인
+- 1년치 Jira 리포트를 빠르게 생성해야 하는 개인
+- 분기별/연간 결과를 한 번에 확인하고 싶은 개인
 
 ## 준비물
 1) `~/.codex/jira_env` 생성 (템플릿 기반)
@@ -24,47 +24,50 @@ JIRA_ACCOUNT_ID=your-account-id
 ```
 
 ## 핵심 동작 요약
-1) `jira_env`에서 Jira 인증값 로드
-2) `~/.atlassian-mcp.json` 자동 생성
-3) `atlassian-local` MCP 등록
-4) 월 단위 Jira 데이터 export + 로컬 traverse
-5) 누락 키가 있으면 MCP 보충 후 최종 CSV 생성
+1) 연간 범위를 Q1~Q4로 분할해 병렬 실행
+2) 분기 내부는 주 단위 export 병렬 처리 유지
+3) master 브랜치 PR merge 기간으로 필터링
+4) 분기 CSV를 연간 CSV로 병합(중복 root_key 제거)
 
 ## 실행 방법
 ### 기본 실행 (권장)
 ```bash
-YEAR=2026 MONTH=1 PROJECTS=MGTT,ITPT \
+YEAR=2025 PROJECTS=MGTT,ITPT \
+EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
+MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
 ENV_FILE=~/.codex/jira_env \
-~/.codex/skills/private-jira-report/scripts/private-jira-report.sh
+~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
 
-### 출력 위치
-- 기본: `~/Downloads/itpt-YYYY-MM`
+### 파라미터 설명 (핵심)
+- `YEAR`: 연간 기준 연도
+- `PROJECTS`: 대상 프로젝트 (기본 MGTT,ITPT)
+- `EXPORT_START/EXPORT_END`: Jira export 범위
+- `MATCH_MODE=assignee`: assignee 기준 (currentUser)
+- `PARALLEL_RANGES`: 주차 병렬 개수
+- `QUARTER_PARALLEL`: 분기 병렬 개수
+
+## 출력 위치
+- 기본: `~/Downloads/itpt-YYYY`
 
 생성 파일:
-- `jira-source.json`
-- `roots.txt`
-- `missing-keys.txt`
-- `itpt-links.csv`
+- 분기별: `Q1/itpt-links.csv`, `Q2/itpt-links.csv`, `Q3/itpt-links.csv`, `Q4/itpt-links.csv`
+- 연간 취합: `itpt-links.csv`
 
 ## 누락 키 처리(필수 케이스)
-`missing-keys.txt`가 있으면 아래 순서로 마무리합니다.
-
-1) MCP로 누락 키 보충하여 `jira-source-supplement.json` 생성
-2) finalize 실행
+분기 결과에 `missing-keys.txt`가 있으면 분기별로 마무리합니다.
 
 ```bash
-OUTPUT_DIR=/path/to/output \
+OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 ~/.codex/skills/jira-itpt-report-finalize/scripts/jira-itpt-finalize.sh
 ```
 
 ## 동작 흐름 (요약)
-- 입력: YEAR, MONTH, PROJECTS
-- ENV_FILE 확인 및 로드
-- MCP 설정 파일 생성
-- MCP 등록
-- Jira REST export + traverse
-- missing-keys 존재 시 MCP 보충 → finalize
+- 입력: YEAR, PROJECTS, EXPORT 범위, MATCH_MODE
+- MCP 설정 및 등록
+- 분기 병렬 실행 + 주차 병렬 export
+- 분기별 itpt-links.csv 생성
+- 연간 itpt-links.csv 취합
 
 ## 자주 발생하는 문제
 1) `ENV_FILE` 없음
@@ -75,12 +78,13 @@ OUTPUT_DIR=/path/to/output \
 - 메시지 예: `Missing required configuration: domain, email, apiToken`
 - 해결: `jira_env` 값 확인 후 재실행
 
-3) 누락 키 지속 발생
+3) 분기별 `missing-keys.txt` 존재
 - 원인: MCP 보충 미실행
-- 해결: `jira-itpt-report-finalize.sh` 실행
+- 해결: 분기별 `jira-itpt-report-finalize.sh` 실행
 
 ## 관련 스킬/스크립트
-- 스킬: `private-jira-report`
+- 스킬: `private-jira-report-yearly`
+- 기반 스킬: `private-jira-report`
 - MCP 등록: `atlassian-mcp-connect`
 - 리포트 생성: `jira-itpt-report`
 - 마무리: `jira-itpt-report-finalize`
@@ -89,5 +93,8 @@ OUTPUT_DIR=/path/to/output \
 
 피드백 주시면 수정 반영하겠습니다.
 
-## 연간 리포트 가이드
-- `private-jira-report-yearly-guide.md`
+## 암묵적 호출 방법
+- 예시: "2025년 개인 리포트 만들어줘"
+- 예시: "작년 리포트 만들어줘. 프로젝트 MGTT,ITPT"
+- 예시: "2025년 1분기 리포트 만들어줘" (분기 범위 자동 분할)
+- 필요 정보: YEAR, 프로젝트(MGTT/ITPT), assignee=currentUser 기준
