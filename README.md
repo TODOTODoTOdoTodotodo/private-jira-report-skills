@@ -12,7 +12,15 @@
 #### skill-installer 사용
 ```bash
 python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
-  https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
+  --method git --ref master \
+  --url https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git \
+  --path skills/private-jira-report \
+         skills/private-jira-report-yearly \
+         skills/private-jira-interview-script \
+         skills/jira-itpt-report \
+         skills/jira-itpt-report-finalize \
+         skills/jira-source-export \
+         skills/atlassian-mcp-connect
 ```
 
 #### 수동 설치
