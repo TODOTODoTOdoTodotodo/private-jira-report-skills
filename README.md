@@ -7,13 +7,22 @@
 - 1년치 Jira 리포트를 빠르게 생성해야 하는 개인
 - 분기별/연간 결과를 한 번에 확인하고 싶은 개인
 
-## 준비물
-1) `~/.codex/jira_env` 생성 (템플릿 기반)
-2) 로컬 MCP 실행을 위한 Node.js 및 npx 사용 가능 환경
+## 빠른 시작
+### 1) 설치
+#### skill-installer 사용
+```bash
+python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
+  https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
+```
 
-### jira_env 템플릿
-템플릿 위치:
-- `~/.codex/jira_env_template`
+#### 수동 설치
+```bash
+git clone https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
+rsync -a private-jira-report-skills/skills/ ~/.codex/skills/
+```
+
+### 2) jira_env 준비
+템플릿: `~/.codex/jira_env_template`
 
 예시:
 ```
@@ -23,14 +32,7 @@ JIRA_API_TOKEN=ATATT...
 JIRA_ACCOUNT_ID=your-account-id
 ```
 
-## 핵심 동작 요약
-1) 연간 범위를 Q1~Q4로 분할해 병렬 실행
-2) 분기 내부는 주 단위 export 병렬 처리 유지
-3) master 브랜치 PR merge 기간으로 필터링
-4) 분기 CSV를 연간 CSV로 병합(중복 root_key 제거)
-
-## 실행 방법
-### 기본 실행 (권장)
+### 3) 기본 실행 (권장)
 ```bash
 YEAR=2025 PROJECTS=MGTT,ITPT \
 EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
@@ -38,6 +40,18 @@ MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
 ENV_FILE=~/.codex/jira_env \
 ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
+
+## 암묵적 호출 방법
+- 예시: "2025년 개인 리포트 만들어줘"
+- 예시: "작년 리포트 만들어줘. 프로젝트 MGTT,ITPT"
+- 예시: "2025년 1분기 리포트 만들어줘" (분기 범위 자동 분할)
+- 필요 정보: YEAR, 프로젝트(MGTT/ITPT), assignee=currentUser 기준
+
+## 핵심 동작 요약
+1) 연간 범위를 Q1~Q4로 분할해 병렬 실행
+2) 분기 내부는 주 단위 export 병렬 처리 유지
+3) master 브랜치 PR merge 기간으로 필터링
+4) 분기 CSV를 연간 CSV로 병합(중복 root_key 제거)
 
 ### 파라미터 설명 (핵심)
 - `YEAR`: 연간 기준 연도
@@ -88,35 +102,3 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 - MCP 등록: `atlassian-mcp-connect`
 - 리포트 생성: `jira-itpt-report`
 - 마무리: `jira-itpt-report-finalize`
-
----
-
-## 설치 방법
-### skill-installer 사용
-```bash
-python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
-  https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
-```
-
-### 수동 설치
-```bash
-git clone https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
-rsync -a private-jira-report-skills/skills/ ~/.codex/skills/
-```
-
-## 사전 준비 (jira_env)
-템플릿: `~/.codex/jira_env_template`
-
-예시:
-```
-JIRA_BASE_URL=https://your-domain.atlassian.net
-JIRA_EMAIL=your-email@example.com
-JIRA_API_TOKEN=ATATT...
-JIRA_ACCOUNT_ID=your-account-id
-```
-
-## 암묵적 호출 방법
-- 예시: "2025년 개인 리포트 만들어줘"
-- 예시: "작년 리포트 만들어줘. 프로젝트 MGTT,ITPT"
-- 예시: "2025년 1분기 리포트 만들어줘" (분기 범위 자동 분할)
-- 필요 정보: YEAR, 프로젝트(MGTT/ITPT), assignee=currentUser 기준
