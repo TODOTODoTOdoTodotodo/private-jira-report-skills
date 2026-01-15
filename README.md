@@ -13,7 +13,7 @@
 ```bash
 python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
   --method git --ref master \
-  --url https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git \
+  --url https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills \
   --path skills/private-jira-report \
          skills/private-jira-report-yearly \
          skills/private-jira-interview-script \
