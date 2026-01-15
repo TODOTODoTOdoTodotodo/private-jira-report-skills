@@ -46,6 +46,7 @@ ENV_FILE=~/.codex/jira_env \
 - `MATCH_MODE=assignee`: assignee 기준 (currentUser)
 - `PARALLEL_RANGES`: 주차 병렬 개수
 - `QUARTER_PARALLEL`: 분기 병렬 개수
+- `QUARTERS`: 실행할 분기 (예: `Q1`, `Q1,Q2`)
 
 ## 출력 위치
 - 기본: `~/Downloads/itpt-YYYY`

@@ -16,6 +16,7 @@ Runs 4 quarter jobs in parallel using the existing `private-jira-report` workflo
 - `MATCH_MODE` (optional, default `assignee`)
 - `QUARTER_PARALLEL` (optional, default `4`)
 - `PARALLEL_RANGES` (optional, default `4`) for weekly export parallelism
+- `QUARTERS` (optional, default all) e.g. `Q1` or `Q1,Q2`
 - `CONCURRENCY`, `MAX_RESULTS`, `MAX_PAGES`, `HTTP_TIMEOUT` (optional, passthrough)
 - `COMMENT_AUTHOR_DISPLAY` (optional, passthrough)
 

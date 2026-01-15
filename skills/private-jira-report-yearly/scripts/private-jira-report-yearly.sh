@@ -44,6 +44,7 @@ OUTPUT_DIR="${OUTPUT_DIR:-$HOME/Downloads/itpt-${YEAR}}"
 MATCH_MODE="${MATCH_MODE:-assignee}"
 QUARTER_PARALLEL="${QUARTER_PARALLEL:-4}"
 PARALLEL_RANGES="${PARALLEL_RANGES:-4}"
+QUARTERS="${QUARTERS:-}"
 
 EXPORT_START="${EXPORT_START:-}"
 EXPORT_END="${EXPORT_END:-}"
@@ -79,7 +80,29 @@ Q4 10 ${YEAR}/10/01 $((YEAR + 1))/01/01
 EOF
 }
 
-quarters | xargs -n 4 -P "$QUARTER_PARALLEL" bash -c '
+quarters_filtered() {
+  quarters | awk -v sel="$QUARTERS" '
+    BEGIN {
+      if (sel == "") { all = 1 }
+      n = split(sel, arr, ",")
+      for (i = 1; i <= n; i++) keep[arr[i]] = 1
+    }
+    {
+      if (all || keep[$1]) print
+    }
+  '
+}
+
+QUARTER_LINES=()
+while IFS= read -r line; do
+  QUARTER_LINES+=("$line")
+done < <(quarters_filtered)
+if [[ "${#QUARTER_LINES[@]}" -eq 0 ]]; then
+  echo "No quarters selected. QUARTERS=$QUARTERS" >&2
+  exit 1
+fi
+
+printf "%s\n" "${QUARTER_LINES[@]}" | xargs -n 4 -P "$QUARTER_PARALLEL" bash -c '
   set -euo pipefail
   quarter="$1"
   month="$2"
@@ -101,11 +124,13 @@ quarters | xargs -n 4 -P "$QUARTER_PARALLEL" bash -c '
 ' _
 
 MERGED_CSV="${OUTPUT_DIR}/itpt-links.csv"
-python3 - "$MERGED_CSV" \
-  "${OUTPUT_DIR}/Q1/itpt-links.csv" \
-  "${OUTPUT_DIR}/Q2/itpt-links.csv" \
-  "${OUTPUT_DIR}/Q3/itpt-links.csv" \
-  "${OUTPUT_DIR}/Q4/itpt-links.csv" <<'PY'
+CSV_ARGS=()
+for line in "${QUARTER_LINES[@]}"; do
+  q="$(echo "$line" | awk "{print \$1}")"
+  CSV_ARGS+=("${OUTPUT_DIR}/${q}/itpt-links.csv")
+done
+
+python3 - "$MERGED_CSV" "${CSV_ARGS[@]}" <<'PY'
 import csv
 import os
 import sys
