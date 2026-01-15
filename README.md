@@ -43,7 +43,7 @@ JIRA_ACCOUNT_ID=your-account-id
 ### Jira API Token 발급
 아틀라시안 계정 > 보안에서 발급
 
-![Jira API Token 발급 위치](이미지 (16).png)
+![Jira API Token 발급 위치](jira-api-token.png)
 
 ### Jira Account ID 조회
 ```bash
