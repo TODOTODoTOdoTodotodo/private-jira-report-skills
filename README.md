@@ -40,6 +40,18 @@ JIRA_API_TOKEN=ATATT...
 JIRA_ACCOUNT_ID=your-account-id
 ```
 
+### Jira API Token 발급
+아틀라시안 계정 > 보안에서 발급
+
+![Jira API Token 발급 위치](이미지 (16).png)
+
+### Jira Account ID 조회
+```bash
+curl -sS -u "JIRA_EMAIL:JIRA_API_TOKEN" \
+  -H "Accept: application/json" \
+  "JIRA_BASE_URL/rest/api/3/myself"
+```
+
 ### 3) 기본 실행 (권장)
 ```bash
 YEAR=2025 PROJECTS=MGTT,ITPT \
