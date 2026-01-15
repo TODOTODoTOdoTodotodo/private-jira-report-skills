@@ -91,7 +91,18 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 
 ---
 
-피드백 주시면 수정 반영하겠습니다.
+## 설치 방법
+### skill-installer 사용
+```bash
+python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
+  https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
+```
+
+### 수동 설치
+```bash
+git clone https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
+rsync -a private-jira-report-skills/skills/ ~/.codex/skills/
+```
 
 ## 암묵적 호출 방법
 - 예시: "2025년 개인 리포트 만들어줘"
