@@ -16,6 +16,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
   --url https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills \
   --path skills/private-jira-report \
          skills/private-jira-report-yearly \
+         skills/private-jira-evaluation-report \
          skills/private-jira-interview-script \
          skills/jira-itpt-report \
          skills/jira-itpt-report-finalize \
@@ -88,7 +89,7 @@ ENV_FILE=~/.codex/jira_env \
 생성 파일:
 - 분기별: `Q1/itpt-links.csv`, `Q2/itpt-links.csv`, `Q3/itpt-links.csv`, `Q4/itpt-links.csv`
 - 연간 취합: `itpt-links.csv`
-- 면접 스크립트: `interview-script-YYYY.md`
+- 평가 리포트: `evaluation-YYYY.md`
 
 ## 누락 키 처리(필수 케이스)
 분기 결과에 `missing-keys.txt`가 있으면 분기별로 마무리합니다.

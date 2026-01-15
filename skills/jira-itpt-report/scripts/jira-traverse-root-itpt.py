@@ -85,7 +85,9 @@ def infer_project_key(issue_key):
 
 
 def find_first_itpt(index, root_key, max_depth):
-    root_summary = (index.get(root_key) or {}).get("summary") or ""
+    root_issue = index.get(root_key) or {}
+    root_summary = root_issue.get("summary") or ""
+    root_desc = root_issue.get("description_summary") or ""
     visited = set()
     queue = deque([(root_key, 0)])
     visited.add(root_key)
@@ -105,11 +107,15 @@ def find_first_itpt(index, root_key, max_depth):
             if not to_project_key:
                 to_project_key = infer_project_key(nxt)
             if to_project_key == "ITPT":
+                itpt_issue = index.get(nxt) or {}
                 return {
                     "root_key": root_key,
                     "root_summary": root_summary,
+                    "root_description": root_desc,
                     "from_key": current,
                     "upper_key": nxt,
+                    "upper_summary": itpt_issue.get("summary") or "",
+                    "upper_description": itpt_issue.get("description_summary") or "",
                     "relation_type": relation,
                     "depth": depth + 1,
                 }
@@ -117,8 +123,11 @@ def find_first_itpt(index, root_key, max_depth):
     return {
         "root_key": root_key,
         "root_summary": root_summary,
+        "root_description": root_desc,
         "from_key": "",
         "upper_key": "",
+        "upper_summary": "",
+        "upper_description": "",
         "relation_type": "",
         "depth": "",
     }
@@ -317,8 +326,11 @@ def main():
         columns = [
             "root_key",
             "root_summary",
+            "root_description",
             "from_key",
             "upper_key",
+            "upper_summary",
+            "upper_description",
             "relation_type",
             "depth",
         ]
@@ -329,8 +341,11 @@ def main():
             data = [
                 row.get("root_key", ""),
                 row.get("root_summary", ""),
+                row.get("root_description", ""),
                 row.get("from_key", ""),
                 row.get("upper_key", ""),
+                row.get("upper_summary", ""),
+                row.get("upper_description", ""),
                 row.get("relation_type", ""),
                 row.get("depth", ""),
             ]

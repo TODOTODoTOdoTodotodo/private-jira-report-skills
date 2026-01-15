@@ -10,6 +10,35 @@ import urllib.parse
 import urllib.request
 
 
+def extract_text(value):
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        if value.get("type") == "text":
+            return value.get("text", "")
+        parts = []
+        for item in value.get("content", []) or []:
+            parts.append(extract_text(item))
+        return "".join(parts)
+    if isinstance(value, list):
+        return "".join(extract_text(item) for item in value)
+    return ""
+
+
+def summarize_text(text, limit=None):
+    max_len = int(get_env("DESCRIPTION_MAX_LEN", "280"))
+    if limit is not None:
+        max_len = limit
+    cleaned = " ".join(str(text).split())
+    if not cleaned:
+        return ""
+    if len(cleaned) <= max_len:
+        return cleaned
+    return cleaned[: max_len - 3].rstrip() + "..."
+
+
 def load_env_file(path):
     if not path:
         return
@@ -229,9 +258,14 @@ def normalize_issue(issue):
                 "issue_key": issue_key,
             }
         )
+    description = fields.get("description")
+    description_text = extract_text(description)
+    description_summary = summarize_text(description_text)
     return {
         "issue_key": issue.get("key"),
         "summary": fields.get("summary"),
+        "description": description_text,
+        "description_summary": description_summary,
         "project_key": (fields.get("project") or {}).get("key"),
         "issuetype": (fields.get("issuetype") or {}).get("name"),
         "parent_key": (fields.get("parent") or {}).get("key"),
@@ -242,7 +276,7 @@ def normalize_issue(issue):
 def fetch_issue(client, key):
     issue = client.issue(
         key,
-        ["summary", "issuetype", "project", "parent", "issuelinks"],
+        ["summary", "description", "issuetype", "project", "parent", "issuelinks"],
     )
     return normalize_issue(issue)
 
@@ -343,7 +377,7 @@ def main():
                 client,
                 comment_jql,
                 max_results,
-                ["summary", "issuetype", "project", "parent", "issuelinks"],
+                ["summary", "description", "issuetype", "project", "parent", "issuelinks"],
                 max_pages,
             )
             comment_results = [normalize_issue(issue) for issue in comment_issues]
@@ -376,7 +410,7 @@ def main():
             client,
             assignee_jql,
             max_results,
-            ["summary", "issuetype", "project", "parent", "issuelinks"],
+            ["summary", "description", "issuetype", "project", "parent", "issuelinks"],
             max_pages,
         )
         results = [normalize_issue(issue) for issue in issues]
@@ -387,7 +421,7 @@ def main():
             client,
             assignee_jql,
             max_results,
-            ["summary", "issuetype", "project", "parent", "issuelinks"],
+            ["summary", "description", "issuetype", "project", "parent", "issuelinks"],
             max_pages,
         )
         assignee_results = [normalize_issue(issue) for issue in assignee_issues]

@@ -23,6 +23,8 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
 fi
 
 OUTPUT_DIR="${OUTPUT_DIR:-$PWD}"
+EVALUATION_REPORT="${EVALUATION_REPORT:-0}"
+YEAR="${YEAR:-}"
 BASE_JSON="${OUTPUT_DIR}/jira-source.json"
 SUPP_JSON="${OUTPUT_DIR}/jira-source-supplement.json"
 MERGED_JSON="${OUTPUT_DIR}/jira-source-merged.json"
@@ -59,5 +61,25 @@ if [[ -n "$MERGE_END" ]]; then
 fi
 
 python3 "$TRAVERSE_SCRIPT" "${args[@]}"
+
+if [[ "$EVALUATION_REPORT" == "1" ]]; then
+  EVAL_TOOL="${HOME}/.codex/skills/private-jira-evaluation-report/scripts/generate-evaluation-report.py"
+  if [[ -f "$EVAL_TOOL" ]]; then
+    if [[ -z "$YEAR" ]]; then
+      base_name="$(basename "$OUTPUT_DIR")"
+      if [[ "$base_name" =~ itpt-([0-9]{4}) ]]; then
+        YEAR="${BASH_REMATCH[1]}"
+      fi
+    fi
+    if [[ -n "$YEAR" ]]; then
+      python3 "$EVAL_TOOL" \
+        --year "$YEAR" \
+        --base-dir "$OUTPUT_DIR" \
+        --out "${OUTPUT_DIR}/evaluation-${YEAR}.md"
+    else
+      echo "Skip evaluation report: YEAR not set." >&2
+    fi
+  fi
+fi
 
 echo "Final report: $CSV_OUT"

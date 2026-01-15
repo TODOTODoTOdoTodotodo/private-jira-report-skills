@@ -167,11 +167,11 @@ PY
 
 echo "Annual report generated: $MERGED_CSV"
 
-INTERVIEW_SCRIPT="${INTERVIEW_SCRIPT:-1}"
-if [[ "$INTERVIEW_SCRIPT" == "1" ]]; then
-  INTERVIEW_SCRIPT_TOOL="${HOME}/.codex/skills/private-jira-interview-script/scripts/generate-interview-script.py"
-  python3 "$INTERVIEW_SCRIPT_TOOL" \
+EVALUATION_REPORT="${EVALUATION_REPORT:-1}"
+if [[ "$EVALUATION_REPORT" == "1" ]]; then
+  EVAL_TOOL="${HOME}/.codex/skills/private-jira-evaluation-report/scripts/generate-evaluation-report.py"
+  python3 "$EVAL_TOOL" \
     --year "$YEAR" \
-    --csv "$MERGED_CSV" \
-    --out "${OUTPUT_DIR}/interview-script-${YEAR}.md"
+    --base-dir "$OUTPUT_DIR" \
+    --out "${OUTPUT_DIR}/evaluation-${YEAR}.md"
 fi
