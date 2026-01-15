@@ -329,7 +329,7 @@ def main():
     assignee_jql = f'assignee WAS currentUser() DURING ("{start_date}","{end_date}")'
     comment_override = get_env("COMMENT_JQL", "")
     comment_template = get_env("COMMENT_JQL_TEMPLATE", "")
-    comment_match_enabled = get_env("COMMENT_MATCH", "1") != "0"
+    comment_match_enabled = get_env("COMMENT_MATCH", "0") != "0"
     if projects:
         project_list = [p.strip() for p in projects.split(",") if p.strip()]
         project_filter = "project in (" + ", ".join(project_list) + ")"
