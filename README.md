@@ -156,11 +156,11 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 ## 참고
 ```mermaid
 flowchart TD
-  A[jira-source-export\n원천 JSON 수집] --> B[jira-itpt-report\n로컬 탐색 + 1차 CSV]
-  B --> C[jira-itpt-report-finalize\n누락 보충 + 최종 CSV]
-  C --> D[private-jira-report\n월간 래핑]
-  D --> E[private-jira-report-yearly\n분기 병렬 + 연간 병합]
-  E --> F[private-jira-evaluation-report\n평가 리포트 생성]
+  A[jira-source-export<br/>원천 JSON 수집<br/>실행: REST] --> B[jira-itpt-report<br/>로컬 탐색 + 1차 CSV<br/>실행: REST + 로컬]
+  B --> C[jira-itpt-report-finalize<br/>누락 보충 + 최종 CSV<br/>실행: MCP + 로컬]
+  C --> D[private-jira-report<br/>월간 래핑<br/>실행: REST + MCP + 로컬]
+  D --> E[private-jira-report-yearly<br/>분기 병렬 + 연간 병합<br/>실행: REST + MCP + 로컬]
+  E --> F[private-jira-evaluation-report<br/>평가 리포트 생성<br/>실행: 로컬]
 
   subgraph Base["저수준 기능"]
     A
@@ -177,3 +177,4 @@ flowchart TD
     F
   end
 ```
+
