@@ -57,6 +57,11 @@ curl -sS -u "JIRA_EMAIL:JIRA_API_TOKEN" \
 - `private-jira-report`가 `~/.atlassian-mcp.json`을 자동 생성하고 `atlassian-local` MCP를 등록합니다.
 - `jira_env`만 준비되어 있으면 별도 MCP 설정 없이 실행됩니다.
 
+### AGENTS.md 설정 옵션
+- Codex는 `AGENTS.md`에 정의된 안전/범위 규칙을 준수합니다.
+- 전역 규칙은 `~/.codex/AGENTS.md`에 두고, 필요 시 프로젝트 루트에 `AGENTS.md`를 추가해 덮어쓸 수 있습니다.
+- 본 레포의 가이드는 `~/.codex/AGENTS.md`의 정책을 기준으로 작성되었습니다.
+
 ### 3) 기본 실행 (권장)
 ```bash
 YEAR=2025 PROJECTS=MGTT,ITPT \
