@@ -109,6 +109,19 @@ def infer_project_key(issue_key):
 def find_first_itpt(index, root_key, max_depth):
     root_issue = index.get(root_key) or {}
     root_summary = root_issue.get("summary") or ""
+    root_desc = root_issue.get("description_summary") or ""
+    root_project = root_issue.get("project_key") or infer_project_key(root_key)
+    if root_project == "ITPT":
+        return {
+            "root_key": root_key,
+            "root_summary": root_summary,
+            "from_key": "",
+            "upper_key": root_key,
+            "upper_summary": root_summary,
+            "upper_description": root_desc,
+            "relation_type": "self",
+            "depth": 0,
+        }
     visited = set()
     queue = deque([(root_key, 0)])
     visited.add(root_key)

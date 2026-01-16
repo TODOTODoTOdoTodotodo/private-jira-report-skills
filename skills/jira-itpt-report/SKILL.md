@@ -27,6 +27,7 @@ jira 연결해줘. 인증 token, 2026년 1월, ENV_FILE=~/.codex/jira_env, 프�
 - Atlassian env vars: `ATLASSIAN_DOMAIN`, `ATLASSIAN_EMAIL`, `ATLASSIAN_API_TOKEN` (can be mapped from `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`)
 - Role mode: `ROLE_MODE=dev|plan_qa` (dev=PR merge 기준, plan_qa=assignee 기준)
 - Dev-status cache: `DEVSTATUS_CACHE` (기본 `OUTPUT_DIR/devstatus-cache.json`)
+- Output timestamp: `OUTPUT_TIMESTAMP` (기본 1, 결과 CSV에 타임스탬프 사본 생성)
 - CSV seed: `CSV_SEED` (JQL export CSV, 기본 assignee=currentUser)
 - CSV seed auto: `CSV_SEED_AUTO` (CSV_SEED 비어있으면 Jira CSV 자동 생성, 기본 1)
 - CSV seed JQL: `CSV_SEED_JQL` (Jira CSV export용 JQL override)

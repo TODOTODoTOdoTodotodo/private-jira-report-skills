@@ -99,6 +99,7 @@ SOURCE_JSON="${OUTPUT_DIR}/jira-source.json"
 ROOTS_TXT="${OUTPUT_DIR}/roots.txt"
 MISSING_TXT="${OUTPUT_DIR}/missing-keys.txt"
 CSV_OUT="${OUTPUT_DIR}/itpt-links.csv"
+OUTPUT_TIMESTAMP="${OUTPUT_TIMESTAMP:-1}"
 
 EXPORT_SCRIPT="${HOME}/.codex/skills/jira-source-export/scripts/jira-source-export-fast.py"
 TRAVERSE_SCRIPT="${HOME}/.codex/skills/jira-itpt-report/scripts/jira-traverse-root-itpt.py"
@@ -303,7 +304,8 @@ else
   fi
 fi
 
-python3 "$ROOTS_SCRIPT" "$SOURCE_JSON" "$ROOTS_TXT" --prefix MGTT-
+ROOT_PREFIXES="${ROOT_PREFIXES:-MGTT-,ITPT-}"
+python3 "$ROOTS_SCRIPT" "$SOURCE_JSON" "$ROOTS_TXT" --prefixes "$ROOT_PREFIXES"
 
 MERGE_START="${MERGE_START:-$RANGE_START}"
 MERGE_END="${MERGE_END:-$RANGE_END}"
@@ -339,6 +341,11 @@ if [[ "$ROLE_MODE" == "dev" ]]; then
 fi
 
 python3 "$TRAVERSE_SCRIPT" "${TRAVERSE_ARGS[@]}"
+
+if [[ "$OUTPUT_TIMESTAMP" == "1" && -s "$CSV_OUT" ]]; then
+  TS="$(date +"%Y%m%d-%H%M%S")"
+  cp "$CSV_OUT" "${OUTPUT_DIR}/itpt-links-${TS}.csv"
+fi
 
 if [[ -s "$MISSING_TXT" ]]; then
   echo "Missing keys detected. Use MCP to fetch and merge before final report:" >&2

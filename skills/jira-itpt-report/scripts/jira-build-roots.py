@@ -8,11 +8,25 @@ def main():
     parser = argparse.ArgumentParser(description="Build root key list from Jira source JSON.")
     parser.add_argument("input_json")
     parser.add_argument("output_txt")
-    parser.add_argument("--prefix", default="MGTT-")
+    parser.add_argument("--prefix", default="")
+    parser.add_argument("--prefixes", default="")
     args = parser.parse_args()
 
     data = json.loads(Path(args.input_json).read_text(encoding="utf-8"))
-    keys = sorted({row.get("issue_key") for row in data if row.get("issue_key", "").startswith(args.prefix)})
+    prefixes = []
+    if args.prefixes:
+        prefixes = [p.strip() for p in args.prefixes.split(",") if p.strip()]
+    elif args.prefix:
+        prefixes = [args.prefix]
+    else:
+        prefixes = ["MGTT-", "ITPT-"]
+    keys = sorted(
+        {
+            row.get("issue_key")
+            for row in data
+            if any(row.get("issue_key", "").startswith(p) for p in prefixes)
+        }
+    )
     Path(args.output_txt).write_text("\n".join(keys) + ("\n" if keys else ""), encoding="utf-8")
 
 

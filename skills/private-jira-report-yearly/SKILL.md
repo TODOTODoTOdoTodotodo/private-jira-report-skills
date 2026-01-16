@@ -23,6 +23,7 @@ Runs 4 quarter jobs in parallel using the existing `private-jira-report` workflo
 - `DEVSTATUS_CACHE` (optional, default `OUTPUT_DIR/devstatus-cache.json`)
 - `CONCURRENCY`, `MAX_RESULTS`, `MAX_PAGES`, `HTTP_TIMEOUT` (optional, passthrough)
 - `COMMENT_AUTHOR_DISPLAY` (optional, passthrough)
+- `OUTPUT_TIMESTAMP` (optional, default 1, 연간 CSV/평가 보고서 타임스탬프 사본 생성)
 
 ## Run
 ```bash

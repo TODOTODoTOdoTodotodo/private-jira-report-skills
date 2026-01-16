@@ -47,6 +47,7 @@ QUARTER_PARALLEL="${QUARTER_PARALLEL:-4}"
 PARALLEL_RANGES="${PARALLEL_RANGES:-4}"
 QUARTERS="${QUARTERS:-}"
 ROLE_MODE="${ROLE_MODE:-dev}"
+OUTPUT_TIMESTAMP="${OUTPUT_TIMESTAMP:-1}"
 
 EXPORT_START="${EXPORT_START:-}"
 EXPORT_END="${EXPORT_END:-}"
@@ -184,12 +185,21 @@ with open(out, "w", encoding="utf-8-sig", newline="") as f:
 PY
 
 echo "Annual report generated: $MERGED_CSV"
+if [[ "$OUTPUT_TIMESTAMP" == "1" && -s "$MERGED_CSV" ]]; then
+  TS="$(date +"%Y%m%d-%H%M%S")"
+  cp "$MERGED_CSV" "${OUTPUT_DIR}/itpt-links-${TS}.csv"
+fi
 
 EVALUATION_REPORT="${EVALUATION_REPORT:-1}"
 if [[ "$EVALUATION_REPORT" == "1" ]]; then
   EVAL_TOOL="${HOME}/.codex/skills/private-jira-evaluation-report/scripts/generate-evaluation-report.py"
+  EVAL_OUT="${OUTPUT_DIR}/evaluation-${YEAR}.md"
   python3 "$EVAL_TOOL" \
     --year "$YEAR" \
     --base-dir "$OUTPUT_DIR" \
-    --out "${OUTPUT_DIR}/evaluation-${YEAR}.md"
+    --out "$EVAL_OUT"
+  if [[ "$OUTPUT_TIMESTAMP" == "1" && -s "$EVAL_OUT" ]]; then
+    TS="$(date +"%Y%m%d-%H%M%S")"
+    cp "$EVAL_OUT" "${OUTPUT_DIR}/evaluation-${YEAR}-${TS}.md"
+  fi
 fi

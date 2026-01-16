@@ -14,6 +14,7 @@
 - `ROLE_MODE` (`dev`=PR merge 기준, `plan_qa`=assignee 기준)
 - `CSV_SEED` (Jira UI CSV export 경로)
 - `CSV_SEED_AUTO` (CSV 자동 export, 기본 1; 연간 실행 시 1회 생성/재사용)
+- `OUTPUT_TIMESTAMP` (기본 1, 연간 CSV/평가 보고서 타임스탬프 사본 생성)
 
 ## 실행
 ```bash

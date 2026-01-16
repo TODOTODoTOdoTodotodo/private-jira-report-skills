@@ -11,6 +11,7 @@ Jira 소스를 export하고 ITPT 관계를 로컬에서 탐색해 `itpt-links.cs
 - `CSV_SEED` (Jira UI CSV export 경로, 기본 assignee=currentUser)
 - `CSV_SEED_AUTO` (CSV_SEED 비어있으면 자동 export, 기본 1; 미지정 시 자동)
 - `CSV_SEED_JQL` (CSV export용 JQL override)
+- `OUTPUT_TIMESTAMP` (기본 1, 결과 CSV에 타임스탬프 사본 생성)
 
 ## 실행
 ```bash

@@ -133,6 +133,7 @@ CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee = currentUser()' \
 - `CSV_SEED_AUTO`: CSV_SEED 비어있으면 Jira CSV 자동 생성 (기본 1, 연간 실행 시 1회 생성/재사용)
 - `CSV_SEED_JQL`: CSV export JQL override (예: `assignee WAS currentUser()` 포함)
 - `DEVELOPMENT_FIELD_ID`: Jira 개발 필드 ID (미지정 시 name 검색)
+- `OUTPUT_TIMESTAMP`: 결과 CSV/평가 보고서 타임스탬프 사본 생성 (기본 1)
 
 ## 출력 위치
 - 기본: `~/Downloads/itpt-YYYY`
