@@ -339,13 +339,22 @@ def main():
         f.write("Q: 당신의 가장 큰 강점은 무엇인가요?\n")
         strengths = insights.get("strengths") or []
         if strengths:
-            f.write("A: " + " ".join(strengths) + "\n\n")
+            f.write(
+                "A: 제가 가장 자부하는 지점은 "
+                + " ".join(strengths)
+                + " 이것이 단순한 역량이 아니라, "
+                + "비즈니스 임팩트로 전환되는 실행 방식이라는 점입니다.\n\n"
+            )
         else:
             f.write("A: ITPT 연계를 중심으로 과제를 구조화하고 끝까지 완주하는 힘입니다. ")
             if itpt_theme_labels:
-                f.write(f"특히 {', '.join(itpt_theme_labels)} 영역에서 문제를 방향성 있게 정리해 개선했습니다. ")
+                f.write(
+                    f"특히 {', '.join(itpt_theme_labels)} 영역에서 문제를 방향성 있게 정리해 개선했습니다. "
+                )
             if benefit_labels:
-                f.write(f"성과는 {', '.join(benefit_labels)} 관점으로 반복 축적되어 조직에 일관된 가치를 제공했습니다.\n\n")
+                f.write(
+                    f"성과는 {', '.join(benefit_labels)} 관점으로 반복 축적되어 조직에 일관된 가치를 제공했습니다.\n\n"
+                )
             else:
                 f.write("성과를 꾸준히 누적해 조직에 안정적인 기여를 만들었습니다.\n\n")
 
@@ -353,7 +362,13 @@ def main():
         f.write("Q: 보강해야 할 점은 무엇인가요?\n")
         weaknesses = insights.get("weaknesses") or []
         if weaknesses:
-            f.write("A: " + " ".join(weaknesses) + "\n\n")
+            f.write(
+                "A: 성장 구간에서 반드시 챙길 부분은 "
+                + " ".join(weaknesses)
+                + " 입니다. "
+                + "더 정교한 수치와 맥락으로 결과를 증명해, "
+                + "성과의 파급력을 한 단계 올리겠습니다.\n\n"
+            )
         else:
             f.write("A: 성과의 영향을 수치로 증명하는 역량을 더 강화해야 합니다. ")
             f.write("시간 절감, 장애 감소, 전환율 개선 등 정량 지표로 영향도를 제시해 설득력을 높이겠습니다. ")
@@ -389,6 +404,9 @@ def main():
         impact = insights.get("impact") or []
         if impact:
             f.write("- 기술적 이익/성과: " + ", ".join(impact) + "\n")
+            f.write(
+                "- 요약: 작게 보이는 기술 선택이, 크게 보이는 조직 가치로 이어지는 구간을 만들었다.\n"
+            )
 
     print(f"Wrote evaluation report: {out_path}")
 
