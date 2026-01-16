@@ -16,6 +16,7 @@
 - `CSV_SEED_AUTO` (CSV 자동 export, 기본 1; 연간 실행 시 1회 생성/재사용)
 - `ASSIGNEE_ACCOUNT_ID`, `ASSIGNEE_ACCOUNT_IDS` (CSV seed assignee accountId 지정)
 - `OUTPUT_TIMESTAMP` (기본 1, 연간 CSV/평가 보고서 타임스탬프 사본 생성)
+- `OUTPUT_DIR` (기본 `~/Downloads/itpt-YYYY`, accountId 지정 시 `itpt-YYYY-acct-<ACCOUNT_ID...>` 자동 확장)
 
 ## 실행
 ```bash

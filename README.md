@@ -103,6 +103,8 @@ CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee in (<ACCOUNT_ID_1>, <ACCOUNT_
 - 예시: "2025년 리포트 만들어줘. export 범위 2024/06/01~2026/01/01"
 - 예시: "2025년 리포트 만들어줘. assignee WAS currentUser()로 CSV 시드 생성"
 - 예시: "2025년 리포트 만들어줘. assignee accountId 2명으로 CSV 시드 생성"
+- 예시: "2025년 accountId <ACCOUNT_ID_1> 유저의 개인 리포트 만들어줘. 기획자 기준. 분기병렬 4"
+- 예시: "2025년 assignee accountId <ACCOUNT_ID_1>,<ACCOUNT_ID_2> 개인 리포트 만들어줘"
 - 필요 정보: YEAR, 프로젝트(MGTT/ITPT), role/dev 기준
 
 ### 조건 전달 예시(암묵적)
@@ -139,6 +141,7 @@ CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee in (<ACCOUNT_ID_1>, <ACCOUNT_
 - `CSV_SEED_JQL`: CSV export JQL override (예: `assignee WAS currentUser()` 포함)
 - `ASSIGNEE_ACCOUNT_ID`: CSV seed assignee accountId (단일)
 - `ASSIGNEE_ACCOUNT_IDS`: CSV seed assignee accountIds (콤마 구분, 예: `<ACCOUNT_ID_1>,<ACCOUNT_ID_2>`)
+- `OUTPUT_DIR`: 기본값은 `~/Downloads/itpt-YYYY`이며, `ASSIGNEE_ACCOUNT_ID(S)`가 있으면 `itpt-YYYY-acct-<ACCOUNT_ID...>` 형식으로 자동 확장
 - `DEVELOPMENT_FIELD_ID`: Jira 개발 필드 ID (미지정 시 name 검색)
 - `OUTPUT_TIMESTAMP`: 결과 CSV/평가 보고서 타임스탬프 사본 생성 (기본 1)
 

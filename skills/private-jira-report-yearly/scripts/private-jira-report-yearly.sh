@@ -26,6 +26,8 @@ Optional env:
   PARALLEL_RANGES   (default: 4) weekly export parallelism
   CONCURRENCY, MAX_RESULTS, MAX_PAGES, HTTP_TIMEOUT (passthrough)
   COMMENT_AUTHOR_DISPLAY (passthrough)
+  ASSIGNEE_ACCOUNT_ID  CSV seed assignee accountId (single)
+  ASSIGNEE_ACCOUNT_IDS CSV seed assignee accountIds (comma-separated)
 USAGE
 }
 
@@ -41,7 +43,13 @@ fi
 
 PROJECTS="${PROJECTS:-MGTT,ITPT}"
 ENV_FILE="${ENV_FILE:-$HOME/.codex/jira_env}"
-OUTPUT_DIR="${OUTPUT_DIR:-$HOME/Downloads/itpt-${YEAR}}"
+DEFAULT_OUTPUT_DIR="$HOME/Downloads/itpt-${YEAR}"
+if [[ -z "${OUTPUT_DIR:-}" ]]; then
+  OUTPUT_DIR="$DEFAULT_OUTPUT_DIR"
+  OUTPUT_DIR_DEFAULT=1
+else
+  OUTPUT_DIR_DEFAULT=0
+fi
 MATCH_MODE="${MATCH_MODE:-assignee}"
 QUARTER_PARALLEL="${QUARTER_PARALLEL:-4}"
 PARALLEL_RANGES="${PARALLEL_RANGES:-4}"
@@ -55,6 +63,7 @@ EXPORT_RANGE_AUTO="${EXPORT_RANGE_AUTO:-0}"
 COMMENT_AUTHOR_DISPLAY="${COMMENT_AUTHOR_DISPLAY:-}"
 CSV_SEED="${CSV_SEED:-}"
 CSV_SEED_AUTO="${CSV_SEED_AUTO:-1}"
+ASSIGNEE_ACCOUNT_IDS="${ASSIGNEE_ACCOUNT_IDS:-${ASSIGNEE_ACCOUNT_ID:-}}"
 
 if [[ -z "$EXPORT_START" || -z "$EXPORT_END" ]]; then
   EXPORT_RANGE_AUTO="1"
@@ -67,6 +76,11 @@ end = dt.date(year + 1, 1, 1)
 print(start.strftime("%Y/%m/%d"), end.strftime("%Y/%m/%d"))
 PY
   )
+fi
+
+if [[ "$OUTPUT_DIR_DEFAULT" -eq 1 && -n "$ASSIGNEE_ACCOUNT_IDS" ]]; then
+  ACCOUNT_SUFFIX="$(printf "%s" "$ASSIGNEE_ACCOUNT_IDS" | tr -d " '\"" | tr ",/" "-")"
+  OUTPUT_DIR="${OUTPUT_DIR}-acct-${ACCOUNT_SUFFIX}"
 fi
 
 mkdir -p "$OUTPUT_DIR"

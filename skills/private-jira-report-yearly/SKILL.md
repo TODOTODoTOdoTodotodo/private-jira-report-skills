@@ -15,6 +15,7 @@ Runs 4 quarter jobs in parallel using the existing `private-jira-report` workflo
 - `CSV_SEED` (optional, Jira UI CSV export 경로)
 - `CSV_SEED_AUTO` (optional, CSV 자동 export, 기본 1; 연간 실행 시 1회 생성/재사용)
 - `ASSIGNEE_ACCOUNT_ID`, `ASSIGNEE_ACCOUNT_IDS` (optional, CSV seed assignee accountId 지정)
+- `OUTPUT_DIR` (optional, 기본 `~/Downloads/itpt-YYYY`, accountId 지정 시 `itpt-YYYY-acct-<ACCOUNT_ID...>` 자동 확장)
 - `EXPORT_START` / `EXPORT_END` (optional, 미지정 시 분기 범위로 자동 설정)
 - `MATCH_MODE` (optional, default `assignee`)
 - `QUARTER_PARALLEL` (optional, default `4`)
@@ -54,6 +55,8 @@ CSV_SEED=/path/to/jira.csv \
 - "2025년 리포트 만들어줘. export 범위 2024/06/01~2026/01/01"
 - "2025년 리포트 만들어줘. CSV 시드 JQL은 assignee WAS currentUser()"
 - "2025년 리포트 만들어줘. assignee accountId 2명으로 CSV 시드 생성"
+- "2025년 accountId <ACCOUNT_ID_1> 유저의 개인 리포트 만들어줘. 기획자 기준. 분기병렬 4"
+- "2025년 assignee accountId <ACCOUNT_ID_1>,<ACCOUNT_ID_2> 개인 리포트 만들어줘"
 
 ## Output
 - Quarter outputs: `~/Downloads/itpt-YYYY/Q1..Q4/itpt-links.csv`
