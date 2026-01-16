@@ -185,14 +185,23 @@ def main():
     headers = build_headers(base_url, email, token)
 
     projects = [p.strip() for p in args.projects.split(",") if p.strip()]
+    assignee_account_ids = os.environ.get("ASSIGNEE_ACCOUNT_IDS", "").strip()
+    if not assignee_account_ids:
+        assignee_account_ids = os.environ.get("ASSIGNEE_ACCOUNT_ID", "").strip()
+
     if args.jql:
         jql = args.jql
     else:
+        if assignee_account_ids:
+            assignees = [a.strip() for a in assignee_account_ids.split(",") if a.strip()]
+            assignee_clause = "assignee in (" + ", ".join(assignees) + ")"
+        else:
+            assignee_clause = "assignee = currentUser()"
         if projects:
             project_filter = "project in (" + ", ".join(projects) + ")"
-            jql = f"{project_filter} AND assignee = currentUser()"
+            jql = f"{project_filter} AND {assignee_clause}"
         else:
-            jql = "assignee = currentUser()"
+            jql = assignee_clause
 
     dev_field = args.development_field_id
     if not dev_field:

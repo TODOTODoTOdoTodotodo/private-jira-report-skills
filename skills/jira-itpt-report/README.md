@@ -11,6 +11,7 @@ Jira 소스를 export하고 ITPT 관계를 로컬에서 탐색해 `itpt-links.cs
 - `CSV_SEED` (Jira UI CSV export 경로, 기본 assignee=currentUser)
 - `CSV_SEED_AUTO` (CSV_SEED 비어있으면 자동 export, 기본 1; 미지정 시 자동)
 - `CSV_SEED_JQL` (CSV export용 JQL override)
+- `ASSIGNEE_ACCOUNT_ID`, `ASSIGNEE_ACCOUNT_IDS` (CSV seed assignee accountId 지정)
 - `OUTPUT_TIMESTAMP` (기본 1, 결과 CSV에 타임스탬프 사본 생성)
 
 ## 실행
@@ -35,6 +36,16 @@ CSV seed 자동 생성(assignee 이력 포함 예시):
 ENV_FILE=~/.codex/jira_env \
 CSV_SEED_AUTO=1 \
 CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee WAS currentUser()' \
+START_DATE=2025/01/01 END_DATE=2025/01/31 \
+OUTPUT_DIR=~/Downloads/itpt-2025-01 \
+~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
+```
+
+CSV seed 자동 생성(accountId 지정):
+```bash
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED_AUTO=1 \
+ASSIGNEE_ACCOUNT_IDS='5ff68e9e208dbf0107b087d5,642397f9c35660c269bcc21d' \
 START_DATE=2025/01/01 END_DATE=2025/01/31 \
 OUTPUT_DIR=~/Downloads/itpt-2025-01 \
 ~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh

@@ -22,6 +22,8 @@ Optional env:
   CSV_SEED        Jira CSV export path (assignee=currentUser) for faster seeding
   CSV_SEED_AUTO   Auto-export Jira CSV when CSV_SEED is empty (default: 1)
   CSV_SEED_JQL    Override JQL for CSV seed export (optional)
+  ASSIGNEE_ACCOUNT_ID  CSV seed export assignee accountId (single)
+  ASSIGNEE_ACCOUNT_IDS CSV seed export assignee accountIds (comma-separated)
   DEVELOPMENT_FIELD_ID Jira development field id (optional)
   YEAR            Year for month-based export (e.g. 2026)
   MONTH           Month for month-based export (1-12)

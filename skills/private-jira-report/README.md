@@ -9,6 +9,7 @@
 - `ENV_FILE` (기본 `~/.codex/jira_env`)
 - `CSV_SEED` (Jira UI CSV export 경로)
 - `CSV_SEED_AUTO` (CSV 자동 export, 기본 1; 미지정 시 자동)
+- `ASSIGNEE_ACCOUNT_ID`, `ASSIGNEE_ACCOUNT_IDS` (CSV seed assignee accountId 지정)
 
 ## MCP 자동 설정
 - `private-jira-report` 실행 시 `~/.atlassian-mcp.json`을 생성하고 `atlassian-local` MCP를 등록합니다.
@@ -25,6 +26,15 @@ CSV seed 사용:
 YEAR=2025 MONTH=1 PROJECTS=MGTT,ITPT \
 ENV_FILE=~/.codex/jira_env \
 CSV_SEED=/path/to/jira.csv \
+~/.codex/skills/private-jira-report/scripts/private-jira-report.sh
+```
+
+CSV seed 자동 생성(accountId 지정):
+```bash
+YEAR=2025 MONTH=1 PROJECTS=MGTT,ITPT \
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED_AUTO=1 \
+ASSIGNEE_ACCOUNT_IDS='5ff68e9e208dbf0107b087d5,642397f9c35660c269bcc21d' \
 ~/.codex/skills/private-jira-report/scripts/private-jira-report.sh
 ```
 
