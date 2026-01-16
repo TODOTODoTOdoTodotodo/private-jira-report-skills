@@ -132,3 +132,13 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 - MCP 등록: `atlassian-mcp-connect`
 - 리포트 생성: `jira-itpt-report`
 - 마무리: `jira-itpt-report-finalize`
+
+## 스킬별 한글 가이드
+- [private-jira-report-yearly](skills/private-jira-report-yearly/README.md)
+- [private-jira-report](skills/private-jira-report/README.md)
+- [private-jira-evaluation-report](skills/private-jira-evaluation-report/README.md)
+- [private-jira-interview-script](skills/private-jira-interview-script/README.md)
+- [jira-itpt-report](skills/jira-itpt-report/README.md)
+- [jira-itpt-report-finalize](skills/jira-itpt-report-finalize/README.md)
+- [jira-source-export](skills/jira-source-export/README.md)
+- [atlassian-mcp-connect](skills/atlassian-mcp-connect/README.md)
