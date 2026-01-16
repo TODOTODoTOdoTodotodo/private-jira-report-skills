@@ -3,6 +3,9 @@
 ## 목적
 연간 개인 리포트를 분기 병렬(Q1~Q4)로 생성하고, 연간 CSV로 취합합니다.
 
+## MCP 자동 설정
+- 내부에서 `private-jira-report`를 호출하므로 MCP 설정은 자동으로 처리됩니다.
+
 ## 주요 입력
 - `YEAR` (필수)
 - `PROJECTS` (기본 `MGTT,ITPT`)

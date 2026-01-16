@@ -53,6 +53,10 @@ curl -sS -u "JIRA_EMAIL:JIRA_API_TOKEN" \
   "JIRA_BASE_URL/rest/api/3/myself"
 ```
 
+### MCP 자동 설정
+- `private-jira-report`가 `~/.atlassian-mcp.json`을 자동 생성하고 `atlassian-local` MCP를 등록합니다.
+- `jira_env`만 준비되어 있으면 별도 MCP 설정 없이 실행됩니다.
+
 ### 3) 기본 실행 (권장)
 ```bash
 YEAR=2025 PROJECTS=MGTT,ITPT \

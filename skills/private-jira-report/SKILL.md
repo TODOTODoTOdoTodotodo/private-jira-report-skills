@@ -20,7 +20,7 @@ Run a monthly Jira export + traverse with the smallest possible inputs (YEAR, MO
 1) Ensure local MCP is registered:
    - Ensure `~/.codex/jira_env` exists (see `~/.codex/jira_env_template`).
    - The wrapper writes `~/.atlassian-mcp.json` from `JIRA_*` values.
-   - Use `atlassian-mcp-connect` to register `atlassian-local`.
+   - `private-jira-report` runs `atlassian-mcp-connect` automatically.
 2) Run the wrapper script:
 
 ```bash

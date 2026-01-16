@@ -10,6 +10,9 @@
 - `CSV_SEED` (Jira UI CSV export 경로)
 - `CSV_SEED_AUTO` (CSV 자동 export, 기본 1; 미지정 시 자동)
 
+## MCP 자동 설정
+- `private-jira-report` 실행 시 `~/.atlassian-mcp.json`을 생성하고 `atlassian-local` MCP를 등록합니다.
+
 ## 실행
 ```bash
 YEAR=2025 MONTH=1 PROJECTS=MGTT,ITPT \
