@@ -14,7 +14,7 @@ Runs 4 quarter jobs in parallel using the existing `private-jira-report` workflo
 - `ENV_FILE` (optional, default `~/.codex/jira_env`)
 - `CSV_SEED` (optional, Jira UI CSV export 경로)
 - `CSV_SEED_AUTO` (optional, CSV 자동 export, 기본 1; 연간 실행 시 1회 생성/재사용)
-- `EXPORT_START` / `EXPORT_END` (optional, default `YEAR/01/01` to `YEAR+1/01/01`)
+- `EXPORT_START` / `EXPORT_END` (optional, 미지정 시 분기 범위로 자동 설정)
 - `MATCH_MODE` (optional, default `assignee`)
 - `QUARTER_PARALLEL` (optional, default `4`)
 - `PARALLEL_RANGES` (optional, default `4`) for weekly export parallelism

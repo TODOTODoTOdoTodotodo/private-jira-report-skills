@@ -9,7 +9,7 @@
 ## 주요 입력
 - `YEAR` (필수)
 - `PROJECTS` (기본 `MGTT,ITPT`)
-- `EXPORT_START`, `EXPORT_END`
+- `EXPORT_START`, `EXPORT_END` (미지정 시 분기 범위로 자동 설정)
 - `PARALLEL_RANGES` (주차 병렬), `QUARTER_PARALLEL` (분기 병렬)
 - `ROLE_MODE` (`dev`=PR merge 기준, `plan_qa`=assignee 기준)
 - `CSV_SEED` (Jira UI CSV export 경로)

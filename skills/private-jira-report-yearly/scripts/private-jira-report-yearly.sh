@@ -132,10 +132,17 @@ printf "%s\n" "${QUARTER_LINES[@]}" | xargs -n 4 -P "$QUARTER_PARALLEL" bash -c 
     local ms="$3"
     local me="$4"
     local quarter_dir="${OUTPUT_DIR}/${q}"
+    local export_start="${EXPORT_START:-}"
+    local export_end="${EXPORT_END:-}"
+    if [[ -z "$export_start" || -z "$export_end" ]]; then
+      export_start="$ms"
+      export_end="$me"
+    fi
     YEAR="$YEAR" MONTH="$m" \
     PROJECTS="$PROJECTS" ENV_FILE="$ENV_FILE" \
     OUTPUT_DIR="$quarter_dir" \
     MERGE_START="$ms" MERGE_END="$me" \
+    EXPORT_START="$export_start" EXPORT_END="$export_end" \
     CSV_SEED="$CSV_SEED" CSV_SEED_AUTO="$CSV_SEED_AUTO" \
     "$BASE_REPORT"
   }
