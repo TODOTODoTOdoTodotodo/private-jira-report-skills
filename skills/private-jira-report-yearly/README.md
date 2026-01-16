@@ -14,9 +14,7 @@
 - `ROLE_MODE` (`dev`=PR merge 기준, `plan_qa`=assignee 기준)
 - `CSV_SEED` (Jira UI CSV export 경로)
 - `CSV_SEED_AUTO` (CSV 자동 export, 기본 1; 연간 실행 시 1회 생성/재사용)
-- `ASSIGNEE_ACCOUNT_ID`, `ASSIGNEE_ACCOUNT_IDS` (CSV seed assignee accountId 지정)
 - `OUTPUT_TIMESTAMP` (기본 1, 연간 CSV/평가 보고서 타임스탬프 사본 생성)
-- `OUTPUT_DIR` (기본 `~/Downloads/itpt-YYYY`, accountId 지정 시 `itpt-YYYY-acct-<ACCOUNT_ID...>` 자동 확장)
 
 ## 실행
 ```bash
@@ -33,15 +31,6 @@ YEAR=2025 PROJECTS=MGTT,ITPT \
 EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
 ENV_FILE=~/.codex/jira_env \
 CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee WAS currentUser()' \
-~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
-```
-
-accountId 지정 CSV 시드:
-```bash
-YEAR=2025 PROJECTS=MGTT,ITPT \
-EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
-ENV_FILE=~/.codex/jira_env \
-ASSIGNEE_ACCOUNT_IDS='<ACCOUNT_ID_1>,<ACCOUNT_ID_2>' \
 ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
 

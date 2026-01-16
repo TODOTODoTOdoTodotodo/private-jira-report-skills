@@ -31,7 +31,6 @@ jira 연결해줘. 인증 token, 2026년 1월, ENV_FILE=~/.codex/jira_env, 프�
 - CSV seed: `CSV_SEED` (JQL export CSV, 기본 assignee=currentUser)
 - CSV seed auto: `CSV_SEED_AUTO` (CSV_SEED 비어있으면 Jira CSV 자동 생성, 기본 1)
 - CSV seed JQL: `CSV_SEED_JQL` (Jira CSV export용 JQL override)
-- CSV seed assignee: `ASSIGNEE_ACCOUNT_ID`, `ASSIGNEE_ACCOUNT_IDS` (accountId 지정)
 - Development field: `DEVELOPMENT_FIELD_ID` (Jira 개발 필드 ID, 미지정 시 name 검색)
 
 ### Run end-to-end export (partial)
@@ -74,16 +73,6 @@ OUTPUT_DIR=/path/to/output \
 ~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
 ```
 
-CSV seed 자동 생성(accountId 지정):
-
-```bash
-ENV_FILE=~/.codex/jira_env \
-CSV_SEED_AUTO=1 \
-ASSIGNEE_ACCOUNT_IDS='<ACCOUNT_ID_1>,<ACCOUNT_ID_2>' \
-START_DATE=2025/01/01 END_DATE=2025/01/31 \
-OUTPUT_DIR=/path/to/output \
-~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
-```
 
 If `missing-keys.txt` is non-empty, use MCP to fetch those issues and merge:
 
