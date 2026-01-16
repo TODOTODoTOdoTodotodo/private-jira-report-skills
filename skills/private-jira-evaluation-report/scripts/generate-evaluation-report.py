@@ -28,9 +28,10 @@ def split_issues(rows):
     mgtt = []
     for row in rows:
         upper_key = (row.get("upper_key") or "").strip()
+        root_key_raw = (row.get("root_key") or "").strip()
+        root_key = root_key_raw.rsplit("/browse/", 1)[-1] if "/browse/" in root_key_raw else root_key_raw
         if upper_key.startswith("ITPT-"):
             itpt.append(row)
-        root_key = (row.get("root_key") or "").strip()
         if root_key.startswith("MGTT-"):
             mgtt.append(row)
     return itpt, mgtt
@@ -183,7 +184,8 @@ def pick_top(rows, n):
 
 
 def short_issue(row):
-    root_key = (row.get("root_key") or "").strip()
+    root_key_raw = (row.get("root_key") or "").strip()
+    root_key = root_key_raw.rsplit("/browse/", 1)[-1] if "/browse/" in root_key_raw else root_key_raw
     upper_key = (row.get("upper_key") or "").strip()
     key = root_key or upper_key
     return key or "-"
@@ -230,7 +232,8 @@ def quarter_insights(rows, top_n=1):
 
 
 def fmt_issue(row):
-    root_key = row.get("root_key") or ""
+    root_key_raw = row.get("root_key") or ""
+    root_key = root_key_raw.rsplit("/browse/", 1)[-1] if "/browse/" in root_key_raw else root_key_raw
     upper_key = row.get("upper_key") or ""
     merged = row.get("master_merged_at") or "-"
     parts = [root_key or upper_key]

@@ -330,11 +330,11 @@ def main():
     use_merge_map = bool(args.merge_map)
     merge_start = parse_range(args.merge_start)
     merge_end = parse_range(args.merge_end)
+    env_file = args.env_file or os.environ.get("ENV_FILE", "")
+    if env_file:
+        load_env_file(env_file)
+    base_url = os.environ.get("JIRA_BASE_URL", "").rstrip("/")
     if include_master_merge and not use_merge_map:
-        env_file = args.env_file or os.environ.get("ENV_FILE", "")
-        if env_file:
-            load_env_file(env_file)
-        base_url = os.environ.get("JIRA_BASE_URL", "").rstrip("/")
         email = os.environ.get("JIRA_EMAIL", "")
         token = os.environ.get("JIRA_API_TOKEN", "")
         if base_url and email and token:

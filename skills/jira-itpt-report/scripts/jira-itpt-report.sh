@@ -197,7 +197,9 @@ PY
       mkdir -p "$WEEK_DIR"
       WEEK_SOURCE="${WEEK_DIR}/jira-source.json"
       if [[ -s "$WEEK_SOURCE" ]]; then
-        exit 0
+        if [[ -z "$CSV_SEED" || "$WEEK_SOURCE" -nt "$CSV_SEED" ]]; then
+          exit 0
+        fi
       fi
       if [[ -n "$CSV_SEED" ]]; then
         WEEK_KEYS="${WEEK_DIR}/seed-keys.txt"
