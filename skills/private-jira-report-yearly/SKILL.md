@@ -48,6 +48,9 @@ CSV_SEED=/path/to/jira.csv \
 - "2025년 개인 리포트 만들어줘. 프로젝트 MGTT,ITPT"
 - "2025년 전체 리포트"
 - "작년 리포트 만들어줘"
+- "2025년 1분기 리포트 만들어줘. 개발자 기준"
+- "2025년 리포트 만들어줘. export 범위 2024/06/01~2026/01/01"
+- "2025년 리포트 만들어줘. CSV 시드 JQL은 assignee WAS currentUser()"
 
 ## Output
 - Quarter outputs: `~/Downloads/itpt-YYYY/Q1..Q4/itpt-links.csv`

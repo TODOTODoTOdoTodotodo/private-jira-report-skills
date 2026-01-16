@@ -27,7 +27,7 @@ jira 연결해줘. 인증 token, 2026년 1월, ENV_FILE=~/.codex/jira_env, 프�
 - Atlassian env vars: `ATLASSIAN_DOMAIN`, `ATLASSIAN_EMAIL`, `ATLASSIAN_API_TOKEN` (can be mapped from `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`)
 - Role mode: `ROLE_MODE=dev|plan_qa` (dev=PR merge 기준, plan_qa=assignee 기준)
 - Dev-status cache: `DEVSTATUS_CACHE` (기본 `OUTPUT_DIR/devstatus-cache.json`)
-- CSV seed: `CSV_SEED` (JQL export CSV, assignee=currentUser)
+- CSV seed: `CSV_SEED` (JQL export CSV, 기본 assignee=currentUser)
 - CSV seed auto: `CSV_SEED_AUTO` (CSV_SEED 비어있으면 Jira CSV 자동 생성, 기본 1)
 - CSV seed JQL: `CSV_SEED_JQL` (Jira CSV export용 JQL override)
 - Development field: `DEVELOPMENT_FIELD_ID` (Jira 개발 필드 ID, 미지정 시 name 검색)
@@ -61,12 +61,12 @@ OUTPUT_DIR=/path/to/output \
 ~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
 ```
 
-CSV seed 자동 생성:
+CSV seed 자동 생성(assignee 이력 포함 예시):
 
 ```bash
 ENV_FILE=~/.codex/jira_env \
 CSV_SEED_AUTO=1 \
-CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee = currentUser()' \
+CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee WAS currentUser()' \
 START_DATE=2025/01/01 END_DATE=2025/01/31 \
 OUTPUT_DIR=/path/to/output \
 ~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh

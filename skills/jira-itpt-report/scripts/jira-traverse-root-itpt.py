@@ -109,7 +109,6 @@ def infer_project_key(issue_key):
 def find_first_itpt(index, root_key, max_depth):
     root_issue = index.get(root_key) or {}
     root_summary = root_issue.get("summary") or ""
-    root_desc = root_issue.get("description_summary") or ""
     visited = set()
     queue = deque([(root_key, 0)])
     visited.add(root_key)
@@ -133,7 +132,6 @@ def find_first_itpt(index, root_key, max_depth):
                 return {
                     "root_key": root_key,
                     "root_summary": root_summary,
-                    "root_description": root_desc,
                     "from_key": current,
                     "upper_key": nxt,
                     "upper_summary": itpt_issue.get("summary") or "",
@@ -145,7 +143,6 @@ def find_first_itpt(index, root_key, max_depth):
     return {
         "root_key": root_key,
         "root_summary": root_summary,
-        "root_description": root_desc,
         "from_key": "",
         "upper_key": "",
         "upper_summary": "",
@@ -351,6 +348,13 @@ def main():
         else:
             raise SystemExit("Missing JIRA_* env for master merge lookup.")
 
+    def issue_link(key):
+        if not key:
+            return ""
+        if base_url:
+            return f"{base_url}/browse/{key}"
+        return key
+
     for root_key in roots:
         row = find_first_itpt(index, root_key, args.max_depth)
         if include_master_merge:
@@ -372,6 +376,7 @@ def main():
                     row["master_merged_at"] = ""
             if not in_merge_range(row.get("master_merged_at"), merge_start, merge_end):
                 continue
+        row["root_key"] = issue_link(row.get("root_key") or "")
         rows.append(row)
 
     # Use UTF-8 with BOM for better Excel compatibility with Korean.
@@ -380,7 +385,6 @@ def main():
         columns = [
             "root_key",
             "root_summary",
-            "root_description",
             "from_key",
             "upper_key",
             "upper_summary",
@@ -395,7 +399,6 @@ def main():
             data = [
                 row.get("root_key", ""),
                 row.get("root_summary", ""),
-                row.get("root_description", ""),
                 row.get("from_key", ""),
                 row.get("upper_key", ""),
                 row.get("upper_summary", ""),

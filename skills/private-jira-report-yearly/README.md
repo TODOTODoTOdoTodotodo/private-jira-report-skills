@@ -21,6 +21,15 @@ ENV_FILE=~/.codex/jira_env \
 ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
 
+assignee 이력까지 포함한 CSV 시드:
+```bash
+YEAR=2025 PROJECTS=MGTT,ITPT \
+EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee WAS currentUser()' \
+~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
+```
+
 CSV seed 사용:
 ```bash
 YEAR=2025 PROJECTS=MGTT,ITPT \

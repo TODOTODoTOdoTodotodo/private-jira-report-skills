@@ -87,7 +87,16 @@ CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee = currentUser()' \
 - 예시: "2025년 개인 리포트 만들어줘"
 - 예시: "작년 리포트 만들어줘. 프로젝트 MGTT,ITPT"
 - 예시: "2025년 1분기 리포트 만들어줘" (분기 범위 자동 분할)
-- 필요 정보: YEAR, 프로젝트(MGTT/ITPT), assignee=currentUser 기준
+- 예시: "2025년 1분기 리포트 만들어줘. 개발자 기준"
+- 예시: "2025년 리포트 만들어줘. export 범위 2024/06/01~2026/01/01"
+- 예시: "2025년 리포트 만들어줘. assignee WAS currentUser()로 CSV 시드 생성"
+- 필요 정보: YEAR, 프로젝트(MGTT/ITPT), role/dev 기준
+
+### 조건 전달 예시(암묵적)
+- 역할: "개발자 기준"(ROLE_MODE=dev) / "기획/QA 기준"(ROLE_MODE=plan_qa)
+- 분기 선택: "Q1만", "Q1,Q2만"
+- 기간 지정: "export 범위 2024/06/01~2026/01/01"
+- CSV 시드 JQL: "CSV 시드 JQL은 assignee WAS currentUser()"
 
 ### 역할별 예시
 - 개발자 기준(merge): "2025년 개인 리포트 만들어줘. 개발자 기준으로."
@@ -113,7 +122,7 @@ CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee = currentUser()' \
 - `CSV_SEED`: Jira UI CSV export 경로 (assignee=currentUser)
   - dev 모드에서는 `사용자정의 필드 (development)`의 `lastUpdated`를 PR merge 기준으로 사용
 - `CSV_SEED_AUTO`: CSV_SEED 비어있으면 Jira CSV 자동 생성 (기본 1, 연간 실행 시 1회 생성/재사용)
-- `CSV_SEED_JQL`: CSV export JQL override (예: project/assignee 제한)
+- `CSV_SEED_JQL`: CSV export JQL override (예: `assignee WAS currentUser()` 포함)
 - `DEVELOPMENT_FIELD_ID`: Jira 개발 필드 ID (미지정 시 name 검색)
 
 ## 출력 위치

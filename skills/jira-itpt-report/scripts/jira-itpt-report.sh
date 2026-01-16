@@ -153,7 +153,7 @@ PY
         if [[ ! -s "$WEEK_KEYS" ]]; then
           echo "[]" > "$WEEK_SOURCE"
         else
-          ASSIGNEE_JQL="$(python3 - "$WEEK_KEYS" <<'PY'\nimport sys\nfrom pathlib import Path\nkeys = [line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]\nif not keys:\n    print(\"\")\nelse:\n    print(\"key in (\" + \",\".join(keys) + \")\")\nPY\n)"
+          ASSIGNEE_JQL="$(python3 -c "import sys; from pathlib import Path; keys=[line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]; print(\"\" if not keys else \"key in (\" + \",\".join(keys) + \")\")" "$WEEK_KEYS")"
           ENV_FILE="$ENV_FILE" \
           START_DATE="$WEEK_START" END_DATE="$WEEK_END" \
           PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
@@ -207,7 +207,7 @@ PY
           echo "[]" > "$WEEK_SOURCE"
           exit 0
         fi
-        ASSIGNEE_JQL="$(python3 - "$WEEK_KEYS" <<'PY'\nimport sys\nfrom pathlib import Path\nkeys = [line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]\nif not keys:\n    print(\"\")\nelse:\n    print(\"key in (\" + \",\".join(keys) + \")\")\nPY\n)"
+        ASSIGNEE_JQL="$(python3 -c "import sys; from pathlib import Path; keys=[line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]; print(\"\" if not keys else \"key in (\" + \",\".join(keys) + \")\")" "$WEEK_KEYS")"
         ENV_FILE="$ENV_FILE" \
         START_DATE="$WEEK_START" END_DATE="$WEEK_END" \
         PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
@@ -280,7 +280,7 @@ else
     if [[ ! -s "$SEED_KEYS" ]]; then
       echo "[]" > "$SOURCE_JSON"
     else
-      ASSIGNEE_JQL="$(python3 - "$SEED_KEYS" <<'PY'\nimport sys\nfrom pathlib import Path\nkeys = [line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]\nif not keys:\n    print(\"\")\nelse:\n    print(\"key in (\" + \",\".join(keys) + \")\")\nPY\n)"
+      ASSIGNEE_JQL="$(python3 -c "import sys; from pathlib import Path; keys=[line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]; print(\"\" if not keys else \"key in (\" + \",\".join(keys) + \")\")" "$SEED_KEYS")"
       ENV_FILE="$ENV_FILE" \
       START_DATE="$RANGE_START" END_DATE="$RANGE_END" \
       PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
