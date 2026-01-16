@@ -1,3 +1,5 @@
+![Guide Cover](assets/1.jpg)
+
 # Private Jira Report Yearly 스킬 가이드 (v1)
 
 ## 목적
