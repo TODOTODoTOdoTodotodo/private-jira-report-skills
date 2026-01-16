@@ -51,11 +51,13 @@ OUTPUT_TIMESTAMP="${OUTPUT_TIMESTAMP:-1}"
 
 EXPORT_START="${EXPORT_START:-}"
 EXPORT_END="${EXPORT_END:-}"
+EXPORT_RANGE_AUTO="${EXPORT_RANGE_AUTO:-0}"
 COMMENT_AUTHOR_DISPLAY="${COMMENT_AUTHOR_DISPLAY:-}"
 CSV_SEED="${CSV_SEED:-}"
 CSV_SEED_AUTO="${CSV_SEED_AUTO:-1}"
 
 if [[ -z "$EXPORT_START" || -z "$EXPORT_END" ]]; then
+  EXPORT_RANGE_AUTO="1"
   read -r EXPORT_START EXPORT_END < <(python3 - <<'PY'
 import datetime as dt
 import os
@@ -72,7 +74,7 @@ mkdir -p "$OUTPUT_DIR"
 BASE_REPORT="${HOME}/.codex/skills/private-jira-report/scripts/private-jira-report.sh"
 
 export YEAR OUTPUT_DIR BASE_REPORT
-export PROJECTS ENV_FILE EXPORT_START EXPORT_END MATCH_MODE PARALLEL_RANGES ROLE_MODE
+export PROJECTS ENV_FILE EXPORT_START EXPORT_END EXPORT_RANGE_AUTO MATCH_MODE PARALLEL_RANGES ROLE_MODE
 export CONCURRENCY MAX_RESULTS MAX_PAGES HTTP_TIMEOUT COMMENT_AUTHOR_DISPLAY
 export CSV_SEED CSV_SEED_AUTO
 export WEEKLY_SPLIT=1
@@ -134,7 +136,7 @@ printf "%s\n" "${QUARTER_LINES[@]}" | xargs -n 4 -P "$QUARTER_PARALLEL" bash -c 
     local quarter_dir="${OUTPUT_DIR}/${q}"
     local export_start="${EXPORT_START:-}"
     local export_end="${EXPORT_END:-}"
-    if [[ -z "$export_start" || -z "$export_end" ]]; then
+    if [[ "$EXPORT_RANGE_AUTO" == "1" ]]; then
       export_start="$ms"
       export_end="$me"
     fi
