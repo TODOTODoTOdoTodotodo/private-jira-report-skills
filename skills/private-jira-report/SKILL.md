@@ -13,6 +13,8 @@ Run a monthly Jira export + traverse with the smallest possible inputs (YEAR, MO
 - `MONTH` (required)
 - `PROJECTS` (optional, default `MGTT,ITPT`)
 - `ENV_FILE` (optional, default `~/.codex/jira_env`)
+- `CSV_SEED` (optional, Jira UI CSV export 경로)
+- `CSV_SEED_AUTO` (optional, CSV 자동 export, 기본 1)
 
 ## Workflow
 1) Ensure local MCP is registered:
@@ -24,6 +26,15 @@ Run a monthly Jira export + traverse with the smallest possible inputs (YEAR, MO
 ```bash
 YEAR=2026 MONTH=1 PROJECTS=MGTT,ITPT \
 ENV_FILE=~/.codex/jira_env \
+~/.codex/skills/private-jira-report/scripts/private-jira-report.sh
+```
+
+CSV seed 사용:
+
+```bash
+YEAR=2026 MONTH=1 PROJECTS=MGTT,ITPT \
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED=/path/to/jira.csv \
 ~/.codex/skills/private-jira-report/scripts/private-jira-report.sh
 ```
 

@@ -12,6 +12,8 @@ Runs 4 quarter jobs in parallel using the existing `private-jira-report` workflo
 - `YEAR` (required)
 - `PROJECTS` (optional, default `MGTT,ITPT`)
 - `ENV_FILE` (optional, default `~/.codex/jira_env`)
+- `CSV_SEED` (optional, Jira UI CSV export 경로)
+- `CSV_SEED_AUTO` (optional, CSV 자동 export, 기본 1; 연간 실행 시 1회 생성/재사용)
 - `EXPORT_START` / `EXPORT_END` (optional, default `YEAR/01/01` to `YEAR+1/01/01`)
 - `MATCH_MODE` (optional, default `assignee`)
 - `QUARTER_PARALLEL` (optional, default `4`)
@@ -28,6 +30,16 @@ YEAR=2025 PROJECTS=MGTT,ITPT \
 EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
 MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
 ENV_FILE=~/.codex/jira_env \
+~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
+```
+
+CSV seed 사용:
+```bash
+YEAR=2025 PROJECTS=MGTT,ITPT \
+EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
+MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED=/path/to/jira.csv \
 ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
 

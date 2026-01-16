@@ -9,6 +9,8 @@
 - `EXPORT_START`, `EXPORT_END`
 - `PARALLEL_RANGES` (주차 병렬), `QUARTER_PARALLEL` (분기 병렬)
 - `ROLE_MODE` (`dev`=PR merge 기준, `plan_qa`=assignee 기준)
+- `CSV_SEED` (Jira UI CSV export 경로)
+- `CSV_SEED_AUTO` (CSV 자동 export, 기본 1; 연간 실행 시 1회 생성/재사용)
 
 ## 실행
 ```bash
@@ -16,6 +18,16 @@ YEAR=2025 PROJECTS=MGTT,ITPT \
 EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
 MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
 ENV_FILE=~/.codex/jira_env \
+~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
+```
+
+CSV seed 사용:
+```bash
+YEAR=2025 PROJECTS=MGTT,ITPT \
+EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
+MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED=/path/to/jira.csv \
 ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
 

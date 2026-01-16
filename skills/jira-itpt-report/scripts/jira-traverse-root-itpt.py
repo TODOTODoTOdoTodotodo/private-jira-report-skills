@@ -310,6 +310,7 @@ def main():
     parser.add_argument("--merge-start", default="")
     parser.add_argument("--merge-end", default="")
     parser.add_argument("--devstatus-cache", default="")
+    parser.add_argument("--merge-map", default="")
     parser.add_argument("--http-timeout", type=int, default=60)
     args = parser.parse_args()
 
@@ -328,9 +329,11 @@ def main():
     id_cache = {}
     cache_path = args.devstatus_cache or os.environ.get("DEVSTATUS_CACHE", "")
     dev_cache = load_cache(cache_path) if include_master_merge else {}
+    merge_map = load_cache(args.merge_map) if args.merge_map and include_master_merge else {}
+    use_merge_map = bool(args.merge_map)
     merge_start = parse_range(args.merge_start)
     merge_end = parse_range(args.merge_end)
-    if include_master_merge:
+    if include_master_merge and not use_merge_map:
         env_file = args.env_file or os.environ.get("ENV_FILE", "")
         if env_file:
             load_env_file(env_file)
@@ -351,19 +354,22 @@ def main():
     for root_key in roots:
         row = find_first_itpt(index, root_key, args.max_depth)
         if include_master_merge:
-            try:
-                row["master_merged_at"] = get_master_merge_date(
-                    root_key,
-                    base_url,
-                    headers,
-                    args.http_timeout,
-                    id_cache,
-                    dev_cache,
-                )
-            except Exception:
-                if dev_cache is not None:
-                    dev_cache[root_key] = ""
-                row["master_merged_at"] = ""
+            if use_merge_map:
+                row["master_merged_at"] = merge_map.get(root_key, "")
+            else:
+                try:
+                    row["master_merged_at"] = get_master_merge_date(
+                        root_key,
+                        base_url,
+                        headers,
+                        args.http_timeout,
+                        id_cache,
+                        dev_cache,
+                    )
+                except Exception:
+                    if dev_cache is not None:
+                        dev_cache[root_key] = ""
+                    row["master_merged_at"] = ""
             if not in_merge_range(row.get("master_merged_at"), merge_start, merge_end):
                 continue
         rows.append(row)
@@ -401,7 +407,7 @@ def main():
                 data.append(row.get("master_merged_at", ""))
             writer.writerow(data)
 
-    if include_master_merge:
+    if include_master_merge and not use_merge_map:
         save_cache(cache_path, dev_cache)
 
 

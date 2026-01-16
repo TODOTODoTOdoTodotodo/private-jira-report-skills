@@ -7,11 +7,21 @@
 - `YEAR`, `MONTH`
 - `PROJECTS` (기본 `MGTT,ITPT`)
 - `ENV_FILE` (기본 `~/.codex/jira_env`)
+- `CSV_SEED` (Jira UI CSV export 경로)
+- `CSV_SEED_AUTO` (CSV 자동 export, 기본 1; 미지정 시 자동)
 
 ## 실행
 ```bash
 YEAR=2025 MONTH=1 PROJECTS=MGTT,ITPT \
 ENV_FILE=~/.codex/jira_env \
+~/.codex/skills/private-jira-report/scripts/private-jira-report.sh
+```
+
+CSV seed 사용:
+```bash
+YEAR=2025 MONTH=1 PROJECTS=MGTT,ITPT \
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED=/path/to/jira.csv \
 ~/.codex/skills/private-jira-report/scripts/private-jira-report.sh
 ```
 

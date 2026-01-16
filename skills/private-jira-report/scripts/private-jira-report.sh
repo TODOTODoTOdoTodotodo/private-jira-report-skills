@@ -16,6 +16,7 @@ Optional env:
   PROJECTS     Project filter (default: MGTT,ITPT)
   ENV_FILE     Jira env file (default: ~/.codex/jira_env)
   OUTPUT_DIR   Output directory (default: ~/Downloads/itpt-YYYY-MM)
+  CSV_SEED     Jira CSV export path (assignee=currentUser) for faster seeding
   EXPORT_START Export range start (YYYY/MM/DD)
   EXPORT_END   Export range end (YYYY/MM/DD)
   MERGE_START  PR merge range start (YYYY/MM/DD)
@@ -45,6 +46,7 @@ EXPORT_END="${EXPORT_END:-}"
 MERGE_START="${MERGE_START:-}"
 MERGE_END="${MERGE_END:-}"
 COMMENT_AUTHOR_DISPLAY="${COMMENT_AUTHOR_DISPLAY:-}"
+CSV_SEED="${CSV_SEED:-}"
 
 if [[ -z "$MERGE_START" || -z "$MERGE_END" ]]; then
   read -r MERGE_START MERGE_END < <(python3 - <<'PY'
@@ -118,6 +120,7 @@ PROJECTS="$PROJECTS" \
 MERGE_START="$MERGE_START" MERGE_END="$MERGE_END" \
 EXPORT_START="$EXPORT_START" EXPORT_END="$EXPORT_END" \
 COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
+CSV_SEED="$CSV_SEED" \
 OUTPUT_DIR="$OUTPUT_DIR" \
 "$REPORT_SCRIPT"
 

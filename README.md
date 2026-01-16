@@ -62,6 +62,27 @@ ENV_FILE=~/.codex/jira_env \
 ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
 
+CSV seed 사용 (Jira UI CSV export 기반):
+```bash
+YEAR=2025 PROJECTS=MGTT,ITPT \
+EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
+MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED=/path/to/jira.csv \
+~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
+```
+
+CSV seed 자동 생성:
+```bash
+YEAR=2025 PROJECTS=MGTT,ITPT \
+EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
+MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED_AUTO=1 \
+CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee = currentUser()' \
+~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
+```
+
 ## 암묵적 호출 방법
 - 예시: "2025년 개인 리포트 만들어줘"
 - 예시: "작년 리포트 만들어줘. 프로젝트 MGTT,ITPT"
@@ -89,6 +110,11 @@ ENV_FILE=~/.codex/jira_env \
 - `QUARTERS`: 실행할 분기 (예: `Q1`, `Q1,Q2`)
 - `ROLE_MODE`: `dev`(기본, PR merge 기준) / `plan_qa`(assignee 기준)
 - `DEVSTATUS_CACHE`: dev-status 캐시 경로 (기본: `OUTPUT_DIR/devstatus-cache.json`)
+- `CSV_SEED`: Jira UI CSV export 경로 (assignee=currentUser)
+  - dev 모드에서는 `사용자정의 필드 (development)`의 `lastUpdated`를 PR merge 기준으로 사용
+- `CSV_SEED_AUTO`: CSV_SEED 비어있으면 Jira CSV 자동 생성 (기본 1, 연간 실행 시 1회 생성/재사용)
+- `CSV_SEED_JQL`: CSV export JQL override (예: project/assignee 제한)
+- `DEVELOPMENT_FIELD_ID`: Jira 개발 필드 ID (미지정 시 name 검색)
 
 ## 출력 위치
 - 기본: `~/Downloads/itpt-YYYY`
@@ -177,4 +203,3 @@ flowchart TD
     F
   end
 ```
-

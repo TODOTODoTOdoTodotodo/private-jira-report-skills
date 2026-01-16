@@ -19,6 +19,10 @@ Optional env:
   CONCURRENCY     Parallelism for export (default: 8)
   PROJECTS        Project filter (default: MGTT,ITPT)
   MAX_DEPTH       Traverse depth (default: 5)
+  CSV_SEED        Jira CSV export path (assignee=currentUser) for faster seeding
+  CSV_SEED_AUTO   Auto-export Jira CSV when CSV_SEED is empty (default: 1)
+  CSV_SEED_JQL    Override JQL for CSV seed export (optional)
+  DEVELOPMENT_FIELD_ID Jira development field id (optional)
   YEAR            Year for month-based export (e.g. 2026)
   MONTH           Month for month-based export (1-12)
   WEEKLY_SPLIT    Split range into 7-day chunks (default: 1 for YEAR+MONTH, else 0)
@@ -44,11 +48,18 @@ MATCH_MODE="${MATCH_MODE:-any}"
 MAX_PAGES="${MAX_PAGES:-0}"
 MAX_RESULTS="${MAX_RESULTS:-100}"
 WEEKLY_SPLIT="${WEEKLY_SPLIT:-}"
+CSV_SEED="${CSV_SEED:-}"
+CSV_SEED_AUTO="${CSV_SEED_AUTO:-1}"
+CSV_SEED_JQL="${CSV_SEED_JQL:-}"
+DEVELOPMENT_FIELD_ID="${DEVELOPMENT_FIELD_ID:-}"
+CSV_SEED_SCRIPT="${HOME}/.codex/skills/jira-itpt-report/scripts/jira-seed-from-csv.py"
+CSV_EXPORT_SCRIPT="${HOME}/.codex/skills/jira-itpt-report/scripts/jira-export-csv-seed.py"
 
 RANGE_START="${START_DATE:-}"
 RANGE_END="${END_DATE:-}"
 NO_DATE_FILTER="${NO_DATE_FILTER:-}"
 COMMENT_AUTHOR_DISPLAY="${COMMENT_AUTHOR_DISPLAY:-}"
+ROLE_MODE="${ROLE_MODE:-dev}"
 
 if [[ -n "${YEAR:-}" && -n "${MONTH:-}" ]]; then
   if [[ -z "$WEEKLY_SPLIT" ]]; then
@@ -93,6 +104,24 @@ EXPORT_SCRIPT="${HOME}/.codex/skills/jira-source-export/scripts/jira-source-expo
 TRAVERSE_SCRIPT="${HOME}/.codex/skills/jira-itpt-report/scripts/jira-traverse-root-itpt.py"
 ROOTS_SCRIPT="${HOME}/.codex/skills/jira-itpt-report/scripts/jira-build-roots.py"
 
+if [[ -n "$CSV_SEED" && ! -f "$CSV_SEED" ]]; then
+  echo "CSV_SEED not found: $CSV_SEED" >&2
+  exit 1
+fi
+
+if [[ -n "$CSV_SEED" ]]; then
+  MATCH_MODE="assignee"
+elif [[ "$CSV_SEED_AUTO" == "1" ]]; then
+  CSV_SEED="${OUTPUT_DIR}/jira-seed.csv"
+  python3 "$CSV_EXPORT_SCRIPT" \
+    --out "$CSV_SEED" \
+    --env-file "$ENV_FILE" \
+    --projects "$PROJECTS" \
+    --jql "$CSV_SEED_JQL" \
+    --development-field-id "$DEVELOPMENT_FIELD_ID"
+  MATCH_MODE="assignee"
+fi
+
 if [[ "$WEEKLY_SPLIT" == "1" ]]; then
   SPLIT_DAYS="${SPLIT_DAYS:-7}"
   RANGES_FILE="${OUTPUT_DIR}/weekly-ranges.txt"
@@ -117,23 +146,46 @@ PY
       WEEK_DIR="${OUTPUT_DIR}/week-${WEEK_START//\//}-${WEEK_END//\//}"
       mkdir -p "$WEEK_DIR"
       WEEK_SOURCE="${WEEK_DIR}/jira-source.json"
-      ENV_FILE="$ENV_FILE" \
-      START_DATE="$WEEK_START" END_DATE="$WEEK_END" \
-      PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
-      MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
-      NO_DATE_FILTER="$NO_DATE_FILTER" \
-      COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
-      COMMENT_JQL_TEMPLATE="${COMMENT_JQL_TEMPLATE:-}" \
-      COMMENT_JQL="${COMMENT_JQL:-}" \
-      COMMENT_MATCH="${COMMENT_MATCH:-}" \
-      ASSIGNEE_JQL="${ASSIGNEE_JQL:-}" \
-      python3 "$EXPORT_SCRIPT" "$WEEK_SOURCE"
+      if [[ -n "$CSV_SEED" ]]; then
+        WEEK_KEYS="${WEEK_DIR}/seed-keys.txt"
+        CSV_ARGS=(--csv "$CSV_SEED" --start "$WEEK_START" --end "$WEEK_END" --projects "$PROJECTS" --mode "$ROLE_MODE" --out-keys "$WEEK_KEYS")
+        python3 "$CSV_SEED_SCRIPT" "${CSV_ARGS[@]}"
+        if [[ ! -s "$WEEK_KEYS" ]]; then
+          echo "[]" > "$WEEK_SOURCE"
+        else
+          ASSIGNEE_JQL="$(python3 - "$WEEK_KEYS" <<'PY'\nimport sys\nfrom pathlib import Path\nkeys = [line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]\nif not keys:\n    print(\"\")\nelse:\n    print(\"key in (\" + \",\".join(keys) + \")\")\nPY\n)"
+          ENV_FILE="$ENV_FILE" \
+          START_DATE="$WEEK_START" END_DATE="$WEEK_END" \
+          PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
+          MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
+          NO_DATE_FILTER="$NO_DATE_FILTER" \
+          COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
+          COMMENT_JQL_TEMPLATE="${COMMENT_JQL_TEMPLATE:-}" \
+          COMMENT_JQL="${COMMENT_JQL:-}" \
+          COMMENT_MATCH="${COMMENT_MATCH:-}" \
+          ASSIGNEE_JQL="$ASSIGNEE_JQL" \
+          python3 "$EXPORT_SCRIPT" "$WEEK_SOURCE"
+        fi
+      else
+        ENV_FILE="$ENV_FILE" \
+        START_DATE="$WEEK_START" END_DATE="$WEEK_END" \
+        PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
+        MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
+        NO_DATE_FILTER="$NO_DATE_FILTER" \
+        COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
+        COMMENT_JQL_TEMPLATE="${COMMENT_JQL_TEMPLATE:-}" \
+        COMMENT_JQL="${COMMENT_JQL:-}" \
+        COMMENT_MATCH="${COMMENT_MATCH:-}" \
+        ASSIGNEE_JQL="${ASSIGNEE_JQL:-}" \
+        python3 "$EXPORT_SCRIPT" "$WEEK_SOURCE"
+      fi
       WEEK_SOURCES+=("$WEEK_SOURCE")
     done < "$RANGES_FILE"
   else
     export OUTPUT_DIR ENV_FILE PROJECTS MATCH_MODE CONCURRENCY MAX_PAGES MAX_RESULTS
     export NO_DATE_FILTER COMMENT_AUTHOR_DISPLAY COMMENT_JQL_TEMPLATE COMMENT_JQL
     export COMMENT_MATCH ASSIGNEE_JQL EXPORT_SCRIPT
+    export CSV_SEED CSV_SEED_SCRIPT ROLE_MODE
     while read -r WEEK_START WEEK_END; do
       WEEK_SOURCES+=("${OUTPUT_DIR}/week-${WEEK_START//\//}-${WEEK_END//\//}/jira-source.json")
     done < "$RANGES_FILE"
@@ -147,17 +199,39 @@ PY
       if [[ -s "$WEEK_SOURCE" ]]; then
         exit 0
       fi
-      ENV_FILE="$ENV_FILE" \
-      START_DATE="$WEEK_START" END_DATE="$WEEK_END" \
-      PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
-      MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
-      NO_DATE_FILTER="$NO_DATE_FILTER" \
-      COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
-      COMMENT_JQL_TEMPLATE="$COMMENT_JQL_TEMPLATE" \
-      COMMENT_JQL="$COMMENT_JQL" \
-      COMMENT_MATCH="$COMMENT_MATCH" \
-      ASSIGNEE_JQL="$ASSIGNEE_JQL" \
-      python3 "$EXPORT_SCRIPT" "$WEEK_SOURCE"
+      if [[ -n "$CSV_SEED" ]]; then
+        WEEK_KEYS="${WEEK_DIR}/seed-keys.txt"
+        CSV_ARGS=(--csv "$CSV_SEED" --start "$WEEK_START" --end "$WEEK_END" --projects "$PROJECTS" --mode "$ROLE_MODE" --out-keys "$WEEK_KEYS")
+        python3 "$CSV_SEED_SCRIPT" "${CSV_ARGS[@]}"
+        if [[ ! -s "$WEEK_KEYS" ]]; then
+          echo "[]" > "$WEEK_SOURCE"
+          exit 0
+        fi
+        ASSIGNEE_JQL="$(python3 - "$WEEK_KEYS" <<'PY'\nimport sys\nfrom pathlib import Path\nkeys = [line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]\nif not keys:\n    print(\"\")\nelse:\n    print(\"key in (\" + \",\".join(keys) + \")\")\nPY\n)"
+        ENV_FILE="$ENV_FILE" \
+        START_DATE="$WEEK_START" END_DATE="$WEEK_END" \
+        PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
+        MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
+        NO_DATE_FILTER="$NO_DATE_FILTER" \
+        COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
+        COMMENT_JQL_TEMPLATE="$COMMENT_JQL_TEMPLATE" \
+        COMMENT_JQL="$COMMENT_JQL" \
+        COMMENT_MATCH="$COMMENT_MATCH" \
+        ASSIGNEE_JQL="$ASSIGNEE_JQL" \
+        python3 "$EXPORT_SCRIPT" "$WEEK_SOURCE"
+      else
+        ENV_FILE="$ENV_FILE" \
+        START_DATE="$WEEK_START" END_DATE="$WEEK_END" \
+        PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
+        MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
+        NO_DATE_FILTER="$NO_DATE_FILTER" \
+        COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
+        COMMENT_JQL_TEMPLATE="$COMMENT_JQL_TEMPLATE" \
+        COMMENT_JQL="$COMMENT_JQL" \
+        COMMENT_MATCH="$COMMENT_MATCH" \
+        ASSIGNEE_JQL="$ASSIGNEE_JQL" \
+        python3 "$EXPORT_SCRIPT" "$WEEK_SOURCE"
+      fi
     ' _
   fi
 
@@ -199,24 +273,50 @@ with open(out, "w", encoding="utf-8") as f:
   json.dump(list(by_key.values()), f, ensure_ascii=False, indent=2)
 PY
 else
-  ENV_FILE="$ENV_FILE" \
-  START_DATE="$RANGE_START" END_DATE="$RANGE_END" \
-  PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
-  MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
-  NO_DATE_FILTER="$NO_DATE_FILTER" \
-  COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
-  python3 "$EXPORT_SCRIPT" "$SOURCE_JSON"
+  if [[ -n "$CSV_SEED" ]]; then
+    SEED_KEYS="${OUTPUT_DIR}/seed-keys.txt"
+    CSV_ARGS=(--csv "$CSV_SEED" --start "$RANGE_START" --end "$RANGE_END" --projects "$PROJECTS" --mode "$ROLE_MODE" --out-keys "$SEED_KEYS")
+    python3 "$CSV_SEED_SCRIPT" "${CSV_ARGS[@]}"
+    if [[ ! -s "$SEED_KEYS" ]]; then
+      echo "[]" > "$SOURCE_JSON"
+    else
+      ASSIGNEE_JQL="$(python3 - "$SEED_KEYS" <<'PY'\nimport sys\nfrom pathlib import Path\nkeys = [line.strip() for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]\nif not keys:\n    print(\"\")\nelse:\n    print(\"key in (\" + \",\".join(keys) + \")\")\nPY\n)"
+      ENV_FILE="$ENV_FILE" \
+      START_DATE="$RANGE_START" END_DATE="$RANGE_END" \
+      PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
+      MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
+      NO_DATE_FILTER="$NO_DATE_FILTER" \
+      COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
+      ASSIGNEE_JQL="$ASSIGNEE_JQL" \
+      python3 "$EXPORT_SCRIPT" "$SOURCE_JSON"
+    fi
+  else
+    ENV_FILE="$ENV_FILE" \
+    START_DATE="$RANGE_START" END_DATE="$RANGE_END" \
+    PROJECTS="$PROJECTS" MATCH_MODE="$MATCH_MODE" CONCURRENCY="$CONCURRENCY" \
+    MAX_PAGES="$MAX_PAGES" MAX_RESULTS="$MAX_RESULTS" \
+    NO_DATE_FILTER="$NO_DATE_FILTER" \
+    COMMENT_AUTHOR_DISPLAY="$COMMENT_AUTHOR_DISPLAY" \
+    python3 "$EXPORT_SCRIPT" "$SOURCE_JSON"
+  fi
 fi
 
 python3 "$ROOTS_SCRIPT" "$SOURCE_JSON" "$ROOTS_TXT" --prefix MGTT-
 
 MERGE_START="${MERGE_START:-$RANGE_START}"
 MERGE_END="${MERGE_END:-$RANGE_END}"
-ROLE_MODE="${ROLE_MODE:-}"
-if [[ -z "$ROLE_MODE" ]]; then
-  ROLE_MODE="dev"
-fi
 DEVSTATUS_CACHE="${DEVSTATUS_CACHE:-$OUTPUT_DIR/devstatus-cache.json}"
+if [[ -n "$CSV_SEED" && "$ROLE_MODE" == "dev" ]]; then
+  CSV_MERGE_KEYS="${OUTPUT_DIR}/seed-keys-merge.txt"
+  python3 "$CSV_SEED_SCRIPT" \
+    --csv "$CSV_SEED" \
+    --start "$MERGE_START" \
+    --end "$MERGE_END" \
+    --projects "$PROJECTS" \
+    --mode "$ROLE_MODE" \
+    --out-keys "$CSV_MERGE_KEYS" \
+    --out-merge "$DEVSTATUS_CACHE"
+fi
 
 TRAVERSE_ARGS=(
   "$SOURCE_JSON"
@@ -228,7 +328,12 @@ TRAVERSE_ARGS=(
 )
 
 if [[ "$ROLE_MODE" == "dev" ]]; then
-  TRAVERSE_ARGS+=(--include-master-merge --merge-start "$MERGE_START" --merge-end "$MERGE_END" --devstatus-cache "$DEVSTATUS_CACHE")
+  TRAVERSE_ARGS+=(--include-master-merge --merge-start "$MERGE_START" --merge-end "$MERGE_END")
+  if [[ -n "$CSV_SEED" ]]; then
+    TRAVERSE_ARGS+=(--merge-map "$DEVSTATUS_CACHE")
+  else
+    TRAVERSE_ARGS+=(--devstatus-cache "$DEVSTATUS_CACHE")
+  fi
 fi
 
 python3 "$TRAVERSE_SCRIPT" "${TRAVERSE_ARGS[@]}"

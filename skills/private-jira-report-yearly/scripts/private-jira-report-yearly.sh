@@ -20,6 +20,7 @@ Optional env:
   ENV_FILE
   OUTPUT_DIR        (default: ~/Downloads/itpt-YYYY)
   EXPORT_START/END  (default: YEAR/01/01 to YEAR+1/01/01)
+  CSV_SEED          Jira CSV export path (assignee=currentUser) for faster seeding
   MATCH_MODE        (default: assignee)
   QUARTER_PARALLEL  (default: 4)
   PARALLEL_RANGES   (default: 4) weekly export parallelism
@@ -50,6 +51,8 @@ ROLE_MODE="${ROLE_MODE:-dev}"
 EXPORT_START="${EXPORT_START:-}"
 EXPORT_END="${EXPORT_END:-}"
 COMMENT_AUTHOR_DISPLAY="${COMMENT_AUTHOR_DISPLAY:-}"
+CSV_SEED="${CSV_SEED:-}"
+CSV_SEED_AUTO="${CSV_SEED_AUTO:-1}"
 
 if [[ -z "$EXPORT_START" || -z "$EXPORT_END" ]]; then
   read -r EXPORT_START EXPORT_END < <(python3 - <<'PY'
@@ -70,7 +73,20 @@ BASE_REPORT="${HOME}/.codex/skills/private-jira-report/scripts/private-jira-repo
 export YEAR OUTPUT_DIR BASE_REPORT
 export PROJECTS ENV_FILE EXPORT_START EXPORT_END MATCH_MODE PARALLEL_RANGES ROLE_MODE
 export CONCURRENCY MAX_RESULTS MAX_PAGES HTTP_TIMEOUT COMMENT_AUTHOR_DISPLAY
+export CSV_SEED CSV_SEED_AUTO
 export WEEKLY_SPLIT=1
+
+if [[ -z "$CSV_SEED" && "$CSV_SEED_AUTO" == "1" ]]; then
+  CSV_SEED="${OUTPUT_DIR}/jira-seed.csv"
+  if [[ ! -s "$CSV_SEED" ]]; then
+    python3 "${HOME}/.codex/skills/jira-itpt-report/scripts/jira-export-csv-seed.py" \
+      --out "$CSV_SEED" \
+      --env-file "$ENV_FILE" \
+      --projects "$PROJECTS"
+  fi
+  CSV_SEED_AUTO="0"
+  export CSV_SEED CSV_SEED_AUTO
+fi
 
 quarters() {
   cat <<EOF
@@ -119,6 +135,7 @@ printf "%s\n" "${QUARTER_LINES[@]}" | xargs -n 4 -P "$QUARTER_PARALLEL" bash -c 
     PROJECTS="$PROJECTS" ENV_FILE="$ENV_FILE" \
     OUTPUT_DIR="$quarter_dir" \
     MERGE_START="$ms" MERGE_END="$me" \
+    CSV_SEED="$CSV_SEED" CSV_SEED_AUTO="$CSV_SEED_AUTO" \
     "$BASE_REPORT"
   }
   run_quarter "$quarter" "$month" "$merge_start" "$merge_end"

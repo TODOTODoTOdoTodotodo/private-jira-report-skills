@@ -8,10 +8,32 @@ Jira 소스를 export하고 ITPT 관계를 로컬에서 탐색해 `itpt-links.cs
 - `PROJECTS` (기본 `MGTT,ITPT`)
 - `ENV_FILE` (기본 `~/.codex/jira_env`)
 - `ROLE_MODE` (`dev`=PR merge 기준, `plan_qa`=assignee 기준)
+- `CSV_SEED` (Jira UI CSV export 경로, assignee=currentUser)
+- `CSV_SEED_AUTO` (CSV_SEED 비어있으면 자동 export, 기본 1; 미지정 시 자동)
+- `CSV_SEED_JQL` (CSV export용 JQL override)
 
 ## 실행
 ```bash
 ENV_FILE=~/.codex/jira_env \
+START_DATE=2025/01/01 END_DATE=2025/01/31 \
+OUTPUT_DIR=~/Downloads/itpt-2025-01 \
+~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
+```
+
+CSV seed 사용 (PR merge 기준 빠른 필터):
+```bash
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED=/path/to/jira.csv \
+START_DATE=2025/01/01 END_DATE=2025/01/31 \
+OUTPUT_DIR=~/Downloads/itpt-2025-01 \
+~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
+```
+
+CSV seed 자동 생성:
+```bash
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED_AUTO=1 \
+CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee = currentUser()' \
 START_DATE=2025/01/01 END_DATE=2025/01/31 \
 OUTPUT_DIR=~/Downloads/itpt-2025-01 \
 ~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh

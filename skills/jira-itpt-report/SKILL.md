@@ -27,6 +27,10 @@ jira 연결해줘. 인증 token, 2026년 1월, ENV_FILE=~/.codex/jira_env, 프�
 - Atlassian env vars: `ATLASSIAN_DOMAIN`, `ATLASSIAN_EMAIL`, `ATLASSIAN_API_TOKEN` (can be mapped from `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`)
 - Role mode: `ROLE_MODE=dev|plan_qa` (dev=PR merge 기준, plan_qa=assignee 기준)
 - Dev-status cache: `DEVSTATUS_CACHE` (기본 `OUTPUT_DIR/devstatus-cache.json`)
+- CSV seed: `CSV_SEED` (JQL export CSV, assignee=currentUser)
+- CSV seed auto: `CSV_SEED_AUTO` (CSV_SEED 비어있으면 Jira CSV 자동 생성, 기본 1)
+- CSV seed JQL: `CSV_SEED_JQL` (Jira CSV export용 JQL override)
+- Development field: `DEVELOPMENT_FIELD_ID` (Jira 개발 필드 ID, 미지정 시 name 검색)
 
 ### Run end-to-end export (partial)
 This generates the source JSON, roots list, missing keys, and a partial CSV.
@@ -43,6 +47,27 @@ Month-based (auto weekly chunks saved to `week-YYYYMMDD-YYYYMMDD/`):
 ```bash
 ENV_FILE=~/.codex/jira_env \
 YEAR=2026 MONTH=1 \
+OUTPUT_DIR=/path/to/output \
+~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
+```
+
+CSV seed mode (Jira UI CSV export 사용, PR merge 기준 빠른 분기 필터):
+
+```bash
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED=/path/to/jira.csv \
+START_DATE=2025/01/01 END_DATE=2025/01/31 \
+OUTPUT_DIR=/path/to/output \
+~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
+```
+
+CSV seed 자동 생성:
+
+```bash
+ENV_FILE=~/.codex/jira_env \
+CSV_SEED_AUTO=1 \
+CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee = currentUser()' \
+START_DATE=2025/01/01 END_DATE=2025/01/31 \
 OUTPUT_DIR=/path/to/output \
 ~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh
 ```
@@ -73,6 +98,7 @@ Use `atlassian-mcp-connect` (local MCP server) and ensure `ATLASSIAN_DOMAIN`, `A
 
 ### 2) Export source issues
 Use the `jira-source-export-fast.py` script with `PROJECTS=MGTT,ITPT` and `MATCH_MODE=any`.
+CSV seed를 사용할 경우 `CSV_SEED`가 `Jira CSV (assignee=currentUser)`를 기반으로 `key in (...)` JQL을 생성해 호출 수를 줄입니다. dev 모드에서는 `사용자정의 필드 (development)`의 `lastUpdated`를 PR merge 기준으로 사용합니다.
 
 ### 3) Traverse locally
 Use `jira-traverse-local.py` to produce a partial CSV and a missing key list.
@@ -86,3 +112,5 @@ Merge base + supplement JSON, then re-run local traverse to produce final CSV.
 ## Scripts
 - `scripts/jira-itpt-report.sh`: Partial end-to-end flow (export + traverse + missing keys).
 - `scripts/jira-build-roots.py`: Build MGTT root key list from source JSON.
+- `scripts/jira-seed-from-csv.py`: Jira CSV에서 분기 키/PR merge 기준을 추출.
+- `scripts/jira-export-csv-seed.py`: Jira REST로 CSV seed 자동 export.
