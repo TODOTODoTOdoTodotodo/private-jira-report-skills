@@ -134,12 +134,12 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 - 마무리: `jira-itpt-report-finalize`
 
 ## 스킬별 실행 방식
-- `private-jira-report-yearly`: REST + MCP + 로컬
-- `private-jira-report`: REST + MCP + 로컬
-- `private-jira-evaluation-report`: 로컬
-- `private-jira-interview-script`: 로컬
-- `jira-itpt-report`: REST + 로컬
-- `jira-itpt-report-finalize`: MCP + 로컬
+- `private-jira-report-yearly`: REST + MCP + CSV 참조
+- `private-jira-report`: REST + MCP + CSV 참조
+- `private-jira-evaluation-report`: CSV 참조
+- `private-jira-interview-script`: CSV 참조
+- `jira-itpt-report`: REST + CSV 참조
+- `jira-itpt-report-finalize`: MCP + CSV 참조
 - `jira-source-export`: REST
 - `atlassian-mcp-connect`: MCP 등록
 
@@ -156,11 +156,11 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 ## 참고
 ```mermaid
 flowchart TD
-  A[jira-source-export<br/>원천 JSON 수집<br/>실행: REST] --> B[jira-itpt-report<br/>로컬 탐색 + 1차 CSV<br/>실행: REST + 로컬]
-  B --> C[jira-itpt-report-finalize<br/>누락 보충 + 최종 CSV<br/>실행: MCP + 로컬]
-  C --> D[private-jira-report<br/>월간 래핑<br/>실행: REST + MCP + 로컬]
-  D --> E[private-jira-report-yearly<br/>분기 병렬 + 연간 병합<br/>실행: REST + MCP + 로컬]
-  E --> F[private-jira-evaluation-report<br/>평가 리포트 생성<br/>실행: 로컬]
+  A[jira-source-export<br/>원천 JSON 수집<br/>실행: REST] --> B[jira-itpt-report<br/>CSV 참조 탐색 + 1차 CSV<br/>실행: REST + CSV 참조]
+  B --> C[jira-itpt-report-finalize<br/>누락 보충 + 최종 CSV<br/>실행: MCP + CSV 참조]
+  C --> D[private-jira-report<br/>월간 래핑<br/>실행: REST + MCP + CSV 참조]
+  D --> E[private-jira-report-yearly<br/>분기 병렬 + 연간 병합<br/>실행: REST + MCP + CSV 참조]
+  E --> F[private-jira-evaluation-report<br/>평가 리포트 생성<br/>실행: CSV 참조]
 
   subgraph Base["저수준 기능"]
     A
