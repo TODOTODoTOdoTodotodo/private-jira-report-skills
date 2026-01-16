@@ -40,7 +40,7 @@ accountId 지정 CSV 시드:
 YEAR=2025 PROJECTS=MGTT,ITPT \
 EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
 ENV_FILE=~/.codex/jira_env \
-ASSIGNEE_ACCOUNT_IDS='5ff68e9e208dbf0107b087d5,642397f9c35660c269bcc21d' \
+ASSIGNEE_ACCOUNT_IDS='<ACCOUNT_ID_1>,<ACCOUNT_ID_2>' \
 ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
 

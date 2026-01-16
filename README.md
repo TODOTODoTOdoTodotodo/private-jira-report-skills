@@ -91,7 +91,7 @@ EXPORT_START=2024/06/01 EXPORT_END=2026/01/01 \
 MATCH_MODE=assignee PARALLEL_RANGES=4 QUARTER_PARALLEL=4 \
 ENV_FILE=~/.codex/jira_env \
 CSV_SEED_AUTO=1 \
-CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee in (5ff68e9e208dbf0107b087d5, 642397f9c35660c269bcc21d)' \
+CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee in (<ACCOUNT_ID_1>, <ACCOUNT_ID_2>)' \
 ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
 ```
 
@@ -110,7 +110,7 @@ CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee in (5ff68e9e208dbf0107b087d5,
 - 분기 선택: "Q1만", "Q1,Q2만"
 - 기간 지정: "export 범위 2024/06/01~2026/01/01"
 - CSV 시드 JQL: "CSV 시드 JQL은 assignee WAS currentUser()"
-- CSV 시드 assignee: "assignee accountId는 5ff...,6423...로"
+- CSV 시드 assignee: "assignee accountId는 <ACCOUNT_ID_1>,<ACCOUNT_ID_2>로"
 
 ### 역할별 예시
 - 개발자 기준(merge): "2025년 개인 리포트 만들어줘. 개발자 기준으로."
@@ -138,7 +138,7 @@ CSV_SEED_JQL='project in (MGTT, ITPT) AND assignee in (5ff68e9e208dbf0107b087d5,
 - `CSV_SEED_AUTO`: CSV_SEED 비어있으면 Jira CSV 자동 생성 (기본 1, 연간 실행 시 1회 생성/재사용)
 - `CSV_SEED_JQL`: CSV export JQL override (예: `assignee WAS currentUser()` 포함)
 - `ASSIGNEE_ACCOUNT_ID`: CSV seed assignee accountId (단일)
-- `ASSIGNEE_ACCOUNT_IDS`: CSV seed assignee accountIds (콤마 구분, 예: `5ff...,6423...`)
+- `ASSIGNEE_ACCOUNT_IDS`: CSV seed assignee accountIds (콤마 구분, 예: `<ACCOUNT_ID_1>,<ACCOUNT_ID_2>`)
 - `DEVELOPMENT_FIELD_ID`: Jira 개발 필드 ID (미지정 시 name 검색)
 - `OUTPUT_TIMESTAMP`: 결과 CSV/평가 보고서 타임스탬프 사본 생성 (기본 1)
 

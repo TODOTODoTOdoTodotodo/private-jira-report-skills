@@ -45,7 +45,7 @@ CSV seed 자동 생성(accountId 지정):
 ```bash
 ENV_FILE=~/.codex/jira_env \
 CSV_SEED_AUTO=1 \
-ASSIGNEE_ACCOUNT_IDS='5ff68e9e208dbf0107b087d5,642397f9c35660c269bcc21d' \
+ASSIGNEE_ACCOUNT_IDS='<ACCOUNT_ID_1>,<ACCOUNT_ID_2>' \
 START_DATE=2025/01/01 END_DATE=2025/01/31 \
 OUTPUT_DIR=~/Downloads/itpt-2025-01 \
 ~/.codex/skills/jira-itpt-report/scripts/jira-itpt-report.sh

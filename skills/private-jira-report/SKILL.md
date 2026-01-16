@@ -45,7 +45,7 @@ CSV seed 자동 생성(accountId 지정):
 YEAR=2026 MONTH=1 PROJECTS=MGTT,ITPT \
 ENV_FILE=~/.codex/jira_env \
 CSV_SEED_AUTO=1 \
-ASSIGNEE_ACCOUNT_IDS='5ff68e9e208dbf0107b087d5,642397f9c35660c269bcc21d' \
+ASSIGNEE_ACCOUNT_IDS='<ACCOUNT_ID_1>,<ACCOUNT_ID_2>' \
 ~/.codex/skills/private-jira-report/scripts/private-jira-report.sh
 ```
 
