@@ -142,3 +142,28 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 - [jira-itpt-report-finalize](skills/jira-itpt-report-finalize/README.md)
 - [jira-source-export](skills/jira-source-export/README.md)
 - [atlassian-mcp-connect](skills/atlassian-mcp-connect/README.md)
+
+## 참고
+```mermaid
+flowchart TD
+  A[jira-source-export\n원천 JSON 수집] --> B[jira-itpt-report\n로컬 탐색 + 1차 CSV]
+  B --> C[jira-itpt-report-finalize\n누락 보충 + 최종 CSV]
+  C --> D[private-jira-report\n월간 래핑]
+  D --> E[private-jira-report-yearly\n분기 병렬 + 연간 병합]
+  E --> F[private-jira-evaluation-report\n평가 리포트 생성]
+
+  subgraph Base["저수준 기능"]
+    A
+    B
+    C
+  end
+
+  subgraph Wrapper["상위 래핑"]
+    D
+    E
+  end
+
+  subgraph Output["해석/정리"]
+    F
+  end
+```
