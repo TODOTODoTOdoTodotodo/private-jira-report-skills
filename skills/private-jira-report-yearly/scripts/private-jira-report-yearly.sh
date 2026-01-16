@@ -201,12 +201,18 @@ fi
 
 EVALUATION_REPORT="${EVALUATION_REPORT:-1}"
 if [[ "$EVALUATION_REPORT" == "1" ]]; then
+  INSIGHTS_TOOL="${HOME}/.codex/skills/private-jira-strengths-insights/scripts/generate-strengths-insights.py"
+  INSIGHTS_JSON="${OUTPUT_DIR}/strengths-insights.json"
+  if [[ -x "$INSIGHTS_TOOL" || -f "$INSIGHTS_TOOL" ]]; then
+    python3 "$INSIGHTS_TOOL" --base-dir "$OUTPUT_DIR" --out "$INSIGHTS_JSON"
+  fi
   EVAL_TOOL="${HOME}/.codex/skills/private-jira-evaluation-report/scripts/generate-evaluation-report.py"
   EVAL_OUT="${OUTPUT_DIR}/evaluation-${YEAR}.md"
   python3 "$EVAL_TOOL" \
     --year "$YEAR" \
     --base-dir "$OUTPUT_DIR" \
-    --out "$EVAL_OUT"
+    --out "$EVAL_OUT" \
+    --insights-json "$INSIGHTS_JSON"
   if [[ "$OUTPUT_TIMESTAMP" == "1" && -s "$EVAL_OUT" ]]; then
     TS="$(date +"%Y%m%d-%H%M%S")"
     cp "$EVAL_OUT" "${OUTPUT_DIR}/evaluation-${YEAR}-${TS}.md"

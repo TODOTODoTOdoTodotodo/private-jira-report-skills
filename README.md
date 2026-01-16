@@ -17,6 +17,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
   --path skills/private-jira-report \
          skills/private-jira-report-yearly \
          skills/private-jira-evaluation-report \
+         skills/private-jira-strengths-insights \
          skills/private-jira-interview-script \
          skills/jira-itpt-report \
          skills/jira-itpt-report-finalize \
@@ -183,6 +184,7 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 - `private-jira-report`: REST + MCP + CSV 참조
 - `private-jira-evaluation-report`: CSV 참조
 - `private-jira-interview-script`: CSV 참조
+- `private-jira-strengths-insights`: CSV 참조 + Jira source
 - `jira-itpt-report`: REST + CSV 참조
 - `jira-itpt-report-finalize`: MCP + CSV 참조
 - `jira-source-export`: REST
@@ -193,6 +195,7 @@ OUTPUT_DIR=~/Downloads/itpt-YYYY/Q1 \
 - [private-jira-report](skills/private-jira-report/README.md)
 - [private-jira-evaluation-report](skills/private-jira-evaluation-report/README.md)
 - [private-jira-interview-script](skills/private-jira-interview-script/README.md)
+- [private-jira-strengths-insights](skills/private-jira-strengths-insights/SKILL.md)
 - [jira-itpt-report](skills/jira-itpt-report/README.md)
 - [jira-itpt-report-finalize](skills/jira-itpt-report-finalize/README.md)
 - [jira-source-export](skills/jira-source-export/README.md)
@@ -205,7 +208,8 @@ flowchart TD
   B --> C[jira-itpt-report-finalize<br/>누락 보충 + 최종 CSV<br/>실행: MCP + CSV 참조]
   C --> D[private-jira-report<br/>월간 래핑<br/>실행: REST + MCP + CSV 참조]
   D --> E[private-jira-report-yearly<br/>분기 병렬 + 연간 병합<br/>실행: REST + MCP + CSV 참조]
-  E --> F[private-jira-evaluation-report<br/>평가 리포트 생성<br/>실행: CSV 참조]
+  E --> G[private-jira-strengths-insights<br/>강점/보강 분석<br/>실행: CSV 참조 + Jira source]
+  G --> F[private-jira-evaluation-report<br/>평가 리포트 생성<br/>실행: CSV 참조]
 
   subgraph Base["저수준 기능"]
     A
@@ -219,6 +223,7 @@ flowchart TD
   end
 
   subgraph Output["해석/정리"]
+    G
     F
   end
 ```

@@ -2,6 +2,7 @@
 import argparse
 import csv
 import datetime as dt
+import json
 from pathlib import Path
 
 
@@ -10,6 +11,7 @@ def parse_args():
     parser.add_argument("--year", type=int, required=True)
     parser.add_argument("--base-dir", required=True)
     parser.add_argument("--out", dest="out_path", required=False)
+    parser.add_argument("--insights-json", dest="insights_path", required=False)
     parser.add_argument("--top-n", type=int, default=10)
     return parser.parse_args()
 
@@ -187,8 +189,13 @@ def short_issue(row):
     root_key_raw = (row.get("root_key") or "").strip()
     root_key = root_key_raw.rsplit("/browse/", 1)[-1] if "/browse/" in root_key_raw else root_key_raw
     upper_key = (row.get("upper_key") or "").strip()
+    root_summary = (row.get("root_summary") or "").strip()
+    upper_summary = (row.get("upper_summary") or "").strip()
     key = root_key or upper_key
-    return key or "-"
+    summary = root_summary or upper_summary
+    if key and summary:
+        return f"{key}: {summary}"
+    return key or summary or "-"
 
 
 def top_benefit_labels(benefit):
@@ -235,8 +242,16 @@ def fmt_issue(row):
     root_key_raw = row.get("root_key") or ""
     root_key = root_key_raw.rsplit("/browse/", 1)[-1] if "/browse/" in root_key_raw else root_key_raw
     upper_key = row.get("upper_key") or ""
+    root_summary = (row.get("root_summary") or "").strip()
+    upper_summary = (row.get("upper_summary") or "").strip()
     merged = row.get("master_merged_at") or "-"
-    parts = [root_key or upper_key]
+    parts = []
+    key = root_key or upper_key
+    summary = root_summary or upper_summary
+    if key and summary:
+        parts.append(f"{key}: {summary}")
+    elif key:
+        parts.append(key)
     if upper_key:
         parts.append(f"ITPT: {upper_key}".strip())
     parts.append(f"merge: {merged}")
@@ -265,6 +280,11 @@ def main():
     benefit = build_benefit_signals(merged_rows)
     benefit_labels = top_benefit_labels(benefit)
     itpt_theme_labels = top_themes(build_theme_signals(itpt_rows, focus="itpt"), top_n=3)
+    insights = {}
+    if args.insights_path:
+        insights_path = Path(args.insights_path)
+        if insights_path.exists():
+            insights = json.loads(insights_path.read_text(encoding="utf-8"))
 
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(f"# {args.year} 개인 성과 평가 보고서\n\n")
@@ -316,18 +336,29 @@ def main():
         f.write("- 문서/가이드 제공으로 온보딩 시간 감소\n\n")
 
         f.write("## 나의 강점\n")
-        f.write("- ITPT 연계 기반으로 성과를 구조적으로 축적\n")
-        if itpt_theme_labels:
-            f.write(f"- {', '.join(itpt_theme_labels)} 영역에서 방향성 있는 개선 수행\n")
-        if benefit_labels:
-            f.write(f"- {', '.join(benefit_labels)} 관점에서 반복 기여\n")
-        f.write("- 분기 단위 누적과 운영 이슈 대응을 꾸준히 수행\n\n")
+        f.write("Q: 당신의 가장 큰 강점은 무엇인가요?\n")
+        strengths = insights.get("strengths") or []
+        if strengths:
+            f.write("A: " + " ".join(strengths) + "\n\n")
+        else:
+            f.write("A: ITPT 연계를 중심으로 과제를 구조화하고 끝까지 완주하는 힘입니다. ")
+            if itpt_theme_labels:
+                f.write(f"특히 {', '.join(itpt_theme_labels)} 영역에서 문제를 방향성 있게 정리해 개선했습니다. ")
+            if benefit_labels:
+                f.write(f"성과는 {', '.join(benefit_labels)} 관점으로 반복 축적되어 조직에 일관된 가치를 제공했습니다.\n\n")
+            else:
+                f.write("성과를 꾸준히 누적해 조직에 안정적인 기여를 만들었습니다.\n\n")
 
         f.write("## 보강할 점\n")
-        f.write(
-            "- 성과를 수치화(시간 절감/장애 감소/전환율 개선)해 근거 강화\n"
-            "- ITPT 작업의 맥락/의사결정/결과를 더 명확히 정리\n\n"
-        )
+        f.write("Q: 보강해야 할 점은 무엇인가요?\n")
+        weaknesses = insights.get("weaknesses") or []
+        if weaknesses:
+            f.write("A: " + " ".join(weaknesses) + "\n\n")
+        else:
+            f.write("A: 성과의 영향을 수치로 증명하는 역량을 더 강화해야 합니다. ")
+            f.write("시간 절감, 장애 감소, 전환율 개선 등 정량 지표로 영향도를 제시해 설득력을 높이겠습니다. ")
+            f.write("또한 ITPT 작업의 맥락과 의사결정 근거를 더 명확히 기록해, ")
+            f.write("왜 그 선택이 최선이었는지 설명 가능한 형태로 남기겠습니다.\n\n")
 
         f.write("## 분기별 성과\n")
         for q, rows in quarter_data.items():
@@ -355,6 +386,9 @@ def main():
             f.write(f"- ITPT 작업은 {', '.join(itpt_theme_labels)} 중심으로 진행됨\n")
         f.write("- ITPT 중심의 결과는 확보되었으나, 영향도 정량화가 필요\n")
         f.write("- 분기별 지표와 성과를 묶어 팀/조직 차원의 가치로 확장 필요\n")
+        impact = insights.get("impact") or []
+        if impact:
+            f.write("- 기술적 이익/성과: " + ", ".join(impact) + "\n")
 
     print(f"Wrote evaluation report: {out_path}")
 
