@@ -208,7 +208,7 @@ flowchart TD
   B --> C[jira-itpt-report-finalize<br/>누락 보충 + 최종 CSV<br/>실행: MCP + CSV 참조]
   C --> D[private-jira-report<br/>월간 래핑<br/>실행: REST + MCP + CSV 참조]
   D --> E[private-jira-report-yearly<br/>분기 병렬 + 연간 병합<br/>실행: REST + MCP + CSV 참조]
-  E --> G[private-jira-strengths-insights<br/>강점/보강 분석<br/>실행: CSV 참조 + Jira source]
+  E --> G[private-jira-strengths-insights<br/>강점/보강 분석<br/>실행: CSV 참조 + Jira source + LLM(선택)]
   G --> F[private-jira-evaluation-report<br/>평가 리포트 생성<br/>실행: CSV 참조]
 
   subgraph Base["저수준 기능"]
