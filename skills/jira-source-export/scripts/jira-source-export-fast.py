@@ -326,7 +326,12 @@ def main():
     account_ids = {account_id} if account_id else set()
 
     comment_jql = f'updated >= "{start_date}" AND updated < "{end_date}"'
-    assignee_jql = f'assignee WAS currentUser() DURING ("{start_date}","{end_date}")'
+    if account_id:
+        assignee_jql = (
+            f'assignee WAS accountId("{account_id}") DURING ("{start_date}","{end_date}")'
+        )
+    else:
+        assignee_jql = f'assignee WAS currentUser() DURING ("{start_date}","{end_date}")'
     comment_override = get_env("COMMENT_JQL", "")
     comment_template = get_env("COMMENT_JQL_TEMPLATE", "")
     comment_match_enabled = get_env("COMMENT_MATCH", "0") != "0"

@@ -166,7 +166,11 @@ if [[ -z "${JIRA_ACCOUNT_ID:-}" ]]; then
 fi
 
 comment_jql="updated >= \"$START_DATE\" AND updated < \"$END_DATE\""
-assignee_jql="assignee WAS currentUser() DURING (\"$START_DATE\",\"$END_DATE\")"
+if [[ -n "$JIRA_ACCOUNT_ID" ]]; then
+  assignee_jql="assignee WAS accountId(\"$JIRA_ACCOUNT_ID\") DURING (\"$START_DATE\",\"$END_DATE\")"
+else
+  assignee_jql="assignee WAS currentUser() DURING (\"$START_DATE\",\"$END_DATE\")"
+fi
 
 if [[ -n "$PROJECTS" ]]; then
   project_filter="project in ($(echo "$PROJECTS" | tr ',' ' '))"
