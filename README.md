@@ -33,6 +33,14 @@ git clone https://github.com/TODOTODoTOdoTodotodo/private-jira-report-skills.git
 rsync -a private-jira-report-skills/skills/ ~/.codex/skills/
 ```
 
+#### 업데이트
+```bash
+cd private-jira-report-skills
+git pull
+rsync -a skills/ ~/.codex/skills/
+chmod +x ~/.codex/skills/private-jira-report-yearly/scripts/private-jira-report-yearly.sh
+```
+
 ### 2) jira_env 준비
 템플릿: `~/.codex/jira_env_template`
 
